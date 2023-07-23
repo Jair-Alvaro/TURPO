@@ -78,6 +78,14 @@ def edit_organizacion(request, organizacion_id):
         # Obtener todas las relaciones para mostrarlas en el desplegable
         relaciones = TblRelacioncomercial.objects.all()
 
+        # Obtener el ID de la relación comercial seleccionada del formulario
+        id_relacion_comercial = request.POST.get('relacion', None)
+
+        # Si se seleccionó una relación comercial válida, actualizamos el campo correspondiente de la organización
+        if id_relacion_comercial:
+            organizacion.id_relacion_id = id_relacion_comercial
+
+        # Resto de los campos de la organización
         organizacion.denominacion = request.POST['denominacion']
         organizacion.ruc = request.POST['ruc']
         organizacion.direccion = request.POST['direccion']
@@ -85,13 +93,17 @@ def edit_organizacion(request, organizacion_id):
         organizacion.provincia = request.POST['provincia']
         organizacion.distrito = request.POST['distrito']
         organizacion.notas = request.POST['notas']
+
+        # Guardamos los cambios
         organizacion.save()
+
         return redirect('list_organizaciones')
 
     else:
         # Si la solicitud es GET, obtener todas las relaciones para mostrarlas en el desplegable
         relaciones = TblRelacioncomercial.objects.all()
         return render(request, 'edit_organizacion.html', {'organizacion': organizacion, 'relaciones': relaciones})
+
 
 def delete_organizacion(request):
     if request.method == 'POST':
