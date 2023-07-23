@@ -1,0 +1,79 @@
+{% extends 'sidebar.html' %}
+
+{% block content %}
+<div class="card table-card">
+    <h1>Listado de Organizaciones</h1>
+    <a href="{% url 'crear_organizacion' %}" class="btn btn-success">Crear Nueva Organización</a>
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover table-sm">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Denominación</th>
+                    <th>RUC</th>
+                    <th>Dirección</th>
+                    <th>Departamento</th>
+                    <th>Provincia</th>
+                    <th>Distrito</th>
+                    <th>Notas</th>
+                    <th>Relación Comercial</th>
+                    <th class="small-cell">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for organizacion in organizaciones %}
+                <tr>
+                    <td>{{ organizacion.id }}</td>
+                    <td>{{ organizacion.denominacion }}</td>
+                    <td>{{ organizacion.ruc }}</td>
+                    <td>{{ organizacion.direccion }}</td>
+                    <td>{{ organizacion.departamento }}</td>
+                    <td>{{ organizacion.provincia }}</td>
+                    <td>{{ organizacion.distrito }}</td>
+                    <td>{{ organizacion.notas }}</td>
+                    <td>{{ organizacion.id_relacion }}</td> {# Mostrar el tipo de relación comercial #}
+                    <td class="small-cell">
+                        <a href="{% url 'edit_organizacion' organizacion.id %}" class="btn btn-warning btn-sm mr-2">Editar</a>
+                        <button onclick="showModal({{ organizacion.id }})" class="btn btn-danger btn-sm">Eliminar</button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <!-- Modal para confirmar la eliminación -->
+    <div class="modal fade" id="confirmModal" tabindex="-1" role="dialog" aria-labelledby="confirmModalLabel"
+      aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="confirmModalLabel">¿Estás seguro de que deseas eliminar esta organización?</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <p>Esta acción no se puede deshacer.</p>
+          </div>
+          <div class="modal-footer">
+            <form id="deleteForm" method="post" action="{% url 'delete_organizacion' %}">
+              {% csrf_token %}
+              <input type="hidden" name="organizacion_id" id="organizacionId" value="">
+              <button type="submit" class="btn btn-danger">Confirmar</button>
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- JavaScript -->
+    <script>
+      function showModal(organizacionId) {
+        document.getElementById("organizacionId").value = organizacionId;
+        $('#confirmModal').modal('show');
+      }
+    </script>
+</div>
+{% endblock %}

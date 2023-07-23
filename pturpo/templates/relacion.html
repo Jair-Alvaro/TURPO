@@ -1,0 +1,50 @@
+{% extends 'sidebar.html' %}
+
+{% block content %}
+<div class="card table-card">
+  <h1>Crear nueva relación comercial</h1>
+  <form method="post" action="{% url 'create_relacion' %}">
+    {% csrf_token %}
+    <input type="text" name="relacion" placeholder="Nombre de la relación" required>
+    <button type="submit" class="btn btn-success">Crear</button>
+  </form>
+
+  <hr>
+
+  <h1>Listado de relaciones comerciales</h1>
+  <div class="table-responsive">
+    <table class="table table-bordered table-hover table-sm">
+      <thead>
+        <tr>
+          <th id="celdas1">ID</th>
+          <th id="celdas2">Relación Comercial</th>
+          <th class="small-cell">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for relacion in relaciones %}
+        <tr>
+          <td>{{ relacion.id }}</td>
+          <td>{{ relacion.relacion }}</td>
+          <td class="small-cell">
+            <a href="{% url 'edit_relacion' relacion.id %}" class="btn btn-warning btn-sm mr-2">Editar</a>
+            <button onclick="showModal({{ relacion.id }})" class="btn btn-danger btn-sm">Eliminar</button>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Modal para confirmar la eliminación -->
+<div class="modal fade" id="confirmModal" tabindex="-1" role="dialog" aria-labelledby="confirmModalLabel"
+  aria-hidden="true">
+  <!-- El contenido del modal sigue igual -->
+</div>
+
+<!-- JavaScript -->
+<script>
+  // El código JavaScript sigue igual
+</script>
+{% endblock %}

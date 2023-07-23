@@ -1,0 +1,23 @@
+.small-cell {
+    font-size: 12px; /* Ajusta el tamaño de fuente según tus preferencias */
+    width: 155px;
+}
+#celdas1{
+    width: 100px;
+}
+/* styles.css */
+.card {
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    padding: 20px;
+    background-color: #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .table-card {
+    margin-top: 20px;
+  }
+  .form-control {
+    background: #f0f0f0;
+
+  }

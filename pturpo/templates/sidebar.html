@@ -1,0 +1,89 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>TURPO</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700,800,900" rel="stylesheet">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="{% static 'CSS/sidebar.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'CSS/reseña.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'CSS/relacion.css' %}">
+</head>
+<body>
+
+<div class="wrapper d-flex align-items-stretch">
+    <nav id="sidebar">
+        <div class="custom-menu">
+            <button type="button" id="sidebarCollapse" class="btn btn-primary">
+            </button>
+        </div>
+        <div class="img bg-wrap text-center py-4"
+             style="background-image: url(https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTCEh9VHOE1MJZ8KiHtsci2SCmwJdq_kr4mAA&usqp=CAU);">
+            <div class="user-logo">
+                <div class="img"
+                     style="background-image: url(https://scontent.faqp3-1.fna.fbcdn.net/v/t39.30808-6/348663498_748922573691270_6564800646474381793_n.jpg?_nc_cat=103&ccb=1-7&_nc_sid=09cbfe&_nc_ohc=dgu9zm3btBEAX-y59Nq&_nc_ht=scontent.faqp3-1.fna&oh=00_AfC3Wmnjlrfn1CwFqOKas5THPckDVveJQdnDdVD216X7Hw&oe=64C1C5BA);"></div>
+            </div>
+        </div>
+
+        <ul class="list-unstyled components mb-5">
+            <li class="active">
+              <a href="{% url 'reseña' %}"><span class="fa fa-home mr-3"></span> Reseña</a>
+            </li>
+            <li>
+                <a href="#" onclick="toggleSubmenu('organizacion')"><span class="fa fa-building mr-3"></span> Organización</a>
+                <ul id="organizacion" class="list-unstyled" style="display: none;">
+                    <li><a href="{% url 'list_relaciones' %}">. Relación Comercial</a></li>
+                    <li><a href="{% url 'list_organizaciones' %}">. Entidad - Empresa</a></li>
+                    <li><a href="#">. Contacto</a></li>
+                    <!-- Agrega más subítems aquí si es necesario -->
+                </ul>
+            </li>
+            <li>
+                <a href="#" onclick="toggleSubmenu('proyectos')"><span class="fa fa-folder-open mr-3"></span> Proyectos</a>
+                <ul id="proyectos" class="list-unstyled" style="display: none;">
+                    <li><a href="#">Subítem 1</a></li>
+                    <li><a href="#">Subítem 2</a></li>
+                    <!-- Agrega más subítems aquí si es necesario -->
+                </ul>
+            </li>
+            <li>
+                <a href="#" onclick="toggleSubmenu('personal')"><span class="fa fa-users mr-3"></span> Personal</a>
+                <ul id="personal" class="list-unstyled" style="display: none;">
+                    <li><a href="#">Subítem 1</a></li>
+                    <li><a href="#">Subítem 2</a></li>
+                    <!-- Agrega más subítems aquí si es necesario -->
+                </ul>
+            </li>
+        </ul>
+    </nav>
+
+    <!-- Page Content  -->
+    <div id="content" class="p-4 p-md-5 pt-5">
+        {% block content %}
+        <!--Contenido -->
+        {% endblock %}
+    </div>
+</div>
+
+<script src="{% static 'JS/jquery.min.js' %}"></script>
+<script src="{% static 'JS/bootstrap.min.js' %}"></script>
+<script src="{% static 'JS/main.js' %}"></script>
+<script src="{% static 'JS/bootstrap.min.js' %}"></script>
+<script src="{% static 'JS/navbar.js' %}"></script>
+
+<script>
+    function toggleSubmenu(id) {
+        var submenu = document.getElementById(id);
+        if (submenu.style.display === 'none') {
+            submenu.style.display = 'block';
+        } else {
+            submenu.style.display = 'none';
+        }
+    }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,53 @@
+{% extends 'sidebar.html' %}
+
+{% block content %}
+<div class="card table-card">
+    <div class="card-body">
+        <h1 class="card-title">Editar Organización</h1>
+        <form method="post" action="{% url 'edit_organizacion' organizacion.id %}">
+            {% csrf_token %}
+            <div class="form-row">
+                <div class="col-md-4 form-group">
+                    <label for="denominacion">Denominación:</label>
+                    <input type="text" class="form-control dark-input" name="denominacion" value="{{ organizacion.denominacion }}" required>
+                </div>
+                <div class="col-md-4 form-group">
+                    <label for="ruc">RUC:</label>
+                    <input type="number" class="form-control dark-input" name="ruc" value="{{ organizacion.ruc }}" required>
+                </div>
+                <div class="col-md-4 form-group">
+                    <label for="direccion">Dirección:</label>
+                    <input type="text" class="form-control dark-input" name="direccion" value="{{ organizacion.direccion }}" required>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="col-md-4 form-group">
+                    <label for="departamento">Departamento:</label>
+                    <input type="text" class="form-control dark-input" name="departamento" value="{{ organizacion.departamento }}">
+                </div>
+                <div class="col-md-4 form-group">
+                    <label for="provincia">Provincia:</label>
+                    <input type="text" class="form-control dark-input" name="provincia" value="{{ organizacion.provincia }}">
+                </div>
+                <div class="col-md-4 form-group">
+                    <label for="distrito">Distrito:</label>
+                    <input type="text" class="form-control dark-input" name="distrito" value="{{ organizacion.distrito }}">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="notas">Notas:</label>
+                <input type="text" class="form-control dark-input" name="notas" value="{{ organizacion.notas }}">
+            </div>
+            <div class="form-group">
+                <label for="relacion">Relación Comercial:</label>
+                <select class="form-control dark-input" name="relacion">
+                    {% for relacion in relaciones %}
+                    <option value="{{ relacion.id }}" {% if organizacion.id_relacion.id == relacion.id %}selected{% endif %}>{{ relacion.relacion }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <button type="submit" class="btn btn-success">Guardar Cambios</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
