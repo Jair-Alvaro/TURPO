@@ -1,0 +1,49 @@
+{% extends 'sidebar.html' %}
+
+{% block content %}
+<div class="card table-card">
+    <div class="card-body">
+        <h1 class="card-title">Editar Tarea</h1>
+        <form method="post" action="{% url 'edit_tarea' tarea.id %}">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="id_proyecto">Proyecto:</label>
+                <select class="form-control dark-input" name="id_proyecto">
+                    {% for proyecto in proyectos %}
+                    <option value="{{ proyecto.id }}" {% if tarea.id_proyecto.id == proyecto.id %}selected{% endif %}>{{ proyecto.nom_proyecto }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="nom_tarea">Nombre de la Tarea:</label>
+                <input type="text" class="form-control dark-input" name="nom_tarea" value="{{ tarea.nom_tarea }}" required>
+            </div>
+            <div class="form-group">
+                <label for="f_inicio_t">Fecha de Inicio:</label>
+                <input type="date" class="form-control dark-input" name="f_inicio_t" value="{{ tarea.f_inicio_t|date:'Y-m-d' }}" placeholder="YYYY-MM-DD">
+            </div>
+            <div class="form-group">
+                <label for="f_final_t">Fecha de Finalización:</label>
+                <input type="date" class="form-control dark-input" name="f_final_t" value="{{ tarea.f_final_t|date:'Y-m-d' }}" placeholder="YYYY-MM-DD">
+            </div>
+            <div class="form-group">
+                <label for="dias">Días:</label>
+                <input type="number" class="form-control dark-input" name="dias" value="{{ tarea.dias }}" required>
+            </div>
+            <div class="form-group">
+                <label for="presupuesto_t">Presupuesto:</label>
+                <input type="number" class="form-control dark-input" name="presupuesto_t" step="0.01" value="{{ tarea.presupuesto_t }}" required>
+            </div>
+            <div class="form-group">
+                <label for="notas">Notas:</label>
+                <input type="text" class="form-control dark-input" name="notas" value="{{ tarea.notas }}">
+            </div>
+            <div class="form-group">
+                <label for="estado">Estado:</label>
+                <input type="text" class="form-control dark-input" name="estado" value="{{ tarea.estado }}">
+            </div>
+            <button type="submit" class="btn btn-success">Guardar Cambios</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

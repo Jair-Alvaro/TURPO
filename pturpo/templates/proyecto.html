@@ -1,0 +1,85 @@
+{% extends 'sidebar.html' %}
+
+{% block content %}
+<div class="card table-card">
+    <h1>Listado de Proyectos</h1>
+    <a href="{% url 'crear_proyecto' %}" class="btn btn-success">Crear Nuevo Proyecto</a>
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover table-sm">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Organización</th>
+                    <th>Categoría</th>
+                    <th>Nombre del Proyecto</th>
+                    <th>Prioridad</th>
+                    <th>Fecha de Registro</th>
+                    <th>Fecha de Inicio</th>
+                    <th>Fecha de Finalización</th>
+                    <th>Presupuesto Total</th>
+                    <th>Número de Presupuesto</th>
+                    <th>Observaciones</th>
+                    <th>Estado</th>
+                    <th class="small-cell">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for proyecto in proyectos %}
+                <tr>
+                    <td>{{ proyecto.id }}</td>
+                    <td>{{ proyecto.id_organizacion.denominacion }}</td>
+                    <td>{{ proyecto.id_categoria.categoria }}</td>
+                    <td>{{ proyecto.nom_proyecto }}</td>
+                    <td>{{ proyecto.prioridad }}</td>
+                    <td>{{ proyecto.f_registro }}</td>
+                    <td>{{ proyecto.f_inicio_p }}</td>
+                    <td>{{ proyecto.f_final_p }}</td>
+                    <td>{{ proyecto.presupuesto_p_t }}</td>
+                    <td>{{ proyecto.num_presupuesto_doc }}</td>
+                    <td>{{ proyecto.observaciones }}</td>
+                    <td>{{ proyecto.estado }}</td>
+                    <td class="small-cell">
+                        <a href="{% url 'edit_proyecto' proyecto.id %}" class="btn btn-warning btn-sm mr-2">Editar</a>
+                        <button onclick="showModal({{ proyecto.id }})" class="btn btn-danger btn-sm">Eliminar</button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <!-- Modal para confirmar la eliminación -->
+    <div class="modal fade" id="confirmModal" tabindex="-1" role="dialog" aria-labelledby="confirmModalLabel"
+      aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="confirmModalLabel">¿Estás seguro de que deseas eliminar este proyecto?</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <p>Esta acción no se puede deshacer.</p>
+          </div>
+          <div class="modal-footer">
+            <form id="deleteForm" method="post" action="{% url 'delete_proyecto' %}">
+              {% csrf_token %}
+              <input type="hidden" name="proyecto_id" id="proyectoId" value="">
+              <button type="submit" class="btn btn-danger">Confirmar</button>
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- JavaScript -->
+    <script>
+      function showModal(proyectoId) {
+        document.getElementById("proyectoId").value = proyectoId;
+        $('#confirmModal').modal('show');
+      }
+    </script>
+</div>
+{% endblock %}

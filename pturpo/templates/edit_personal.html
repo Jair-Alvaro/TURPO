@@ -1,0 +1,65 @@
+{% extends 'sidebar.html' %}
+
+{% block content %}
+<div class="card">
+    <div class="card-body">
+        <h1 class="card-title">Editar Personal</h1>
+        <form method="post" action="{% url 'edit_personal' personal.id %}">
+            {% csrf_token %}
+            <div class="form-row">
+                <div class="col-md-6 form-group">
+                    <label for="nombre_personal">Nombre:</label>
+                    <input type="text" class="form-control dark-input" name="nombre_personal" value="{{ personal.nombre_personal }}" required>
+                </div>
+                <div class="col-md-6 form-group">
+                    <label for="apell_personal">Apellido:</label>
+                    <input type="text" class="form-control dark-input" name="apell_personal" value="{{ personal.apell_personal }}" required>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="col-md-6 form-group">
+                    <label for="telefono_p">Teléfono:</label>
+                    <input type="number" class="form-control dark-input" name="telefono_p" value="{{ personal.telefono_p }}" required>
+                </div>
+                <div class="col-md-6 form-group">
+                    <label for="cargo_p">Cargo:</label>
+                    <input type="text" class="form-control dark-input" name="cargo_p" value="{{ personal.cargo_p }}" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="nom_referencia">Nombre de Referencia:</label>
+                <input type="text" class="form-control dark-input" name="nom_referencia" value="{{ personal.nom_referencia }}">
+            </div>
+            <div class="form-group">
+                <label for="vinculo">Vínculo:</label>
+                <input type="text" class="form-control dark-input" name="vinculo" value="{{ personal.vinculo }}">
+            </div>
+            <div class="form-row">
+                <div class="col-md-6 form-group">
+                    <label for="telefono_r">Teléfono de Referencia:</label>
+                    <input type="number" class="form-control dark-input" name="telefono_r" value="{{ personal.telefono_r }}">
+                </div>
+                <div class="col-md-6 form-group">
+                    <label for="direccion_p">Dirección:</label>
+                    <input type="text" class="form-control dark-input" name="direccion_p" value="{{ personal.direccion_p }}">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="col-md-4 form-group">
+                    <label for="departamento_p">Departamento:</label>
+                    <input type="text" class="form-control dark-input" name="departamento_p" value="{{ personal.departamento_p }}">
+                </div>
+                <div class="col-md-4 form-group">
+                    <label for="provincia_p">Provincia:</label>
+                    <input type="text" class="form-control dark-input" name="provincia_p" value="{{ personal.provincia_p }}">
+                </div>
+                <div class="col-md-4 form-group">
+                    <label for="distrito_p">Distrito:</label>
+                    <input type="text" class="form-control dark-input" name="distrito_p" value="{{ personal.distrito_p }}">
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

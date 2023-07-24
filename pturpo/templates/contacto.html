@@ -1,0 +1,79 @@
+{% extends 'sidebar.html' %}
+
+{% block content %}
+<div class="card table-card">
+    <h1>Listado de Contactos</h1>
+    <a href="{% url 'crear_contacto' %}" class="btn btn-success">Crear Nuevo Contacto</a>
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover table-sm">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Apellido</th>
+                    <th>Cargo</th>
+                    <th>Correo</th>
+                    <th>Teléfono</th>
+                    <th>Celular</th>
+                    <th>Notas</th>
+                    <th>Organización</th>
+                    <th class="small-cell">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for contacto in contactos %}
+                <tr>
+                    <td>{{ contacto.id }}</td>
+                    <td>{{ contacto.nom_contacto }}</td>
+                    <td>{{ contacto.apell_contacto }}</td>
+                    <td>{{ contacto.cargo }}</td>
+                    <td>{{ contacto.correo }}</td>
+                    <td>{{ contacto.telefono }}</td>
+                    <td>{{ contacto.celular }}</td>
+                    <td>{{ contacto.notas }}</td>
+                    <td>{{ contacto.id_relacion.denominacion }}</td> {# Mostrar la denominación de la organización #}
+                    <td class="small-cell">
+                        <a href="{% url 'edit_contacto' contacto.id %}" class="btn btn-warning btn-sm mr-2">Editar</a>
+                        <button onclick="showModal({{ contacto.id }})" class="btn btn-danger btn-sm">Eliminar</button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <!-- Modal para confirmar la eliminación -->
+    <div class="modal fade" id="confirmModal" tabindex="-1" role="dialog" aria-labelledby="confirmModalLabel"
+      aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="confirmModalLabel">¿Estás seguro de que deseas eliminar este contacto?</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <p>Esta acción no se puede deshacer.</p>
+          </div>
+          <div class="modal-footer">
+            <form id="deleteForm" method="post" action="{% url 'delete_contacto' %}">
+              {% csrf_token %}
+              <input type="hidden" name="contacto_id" id="contactoId" value="">
+              <button type="submit" class="btn btn-danger">Confirmar</button>
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- JavaScript -->
+    <script>
+      function showModal(contactoId) {
+        document.getElementById("contactoId").value = contactoId;
+        $('#confirmModal').modal('show');
+      }
+    </script>
+</div>
+{% endblock %}

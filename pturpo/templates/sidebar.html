@@ -37,23 +37,25 @@
                 <ul id="organizacion" class="list-unstyled" style="display: none;">
                     <li><a href="{% url 'list_relaciones' %}">. Relación Comercial</a></li>
                     <li><a href="{% url 'list_organizaciones' %}">. Entidad - Empresa</a></li>
-                    <li><a href="#">. Contacto</a></li>
+                    <li><a href="{% url 'list_contactos' %}">. Contacto</a></li>
                     <!-- Agrega más subítems aquí si es necesario -->
                 </ul>
             </li>
             <li>
                 <a href="#" onclick="toggleSubmenu('proyectos')"><span class="fa fa-folder-open mr-3"></span> Proyectos</a>
                 <ul id="proyectos" class="list-unstyled" style="display: none;">
-                    <li><a href="#">Subítem 1</a></li>
-                    <li><a href="#">Subítem 2</a></li>
+                    <li><a href="{% url 'list_proyectos' %}">. Proyectos</a></li>
+                    <li><a href="{% url 'list_tareas' %}">. Tareas</a></li>
+                    <li><a href="{% url 'list_recursos' %}">. Recursos</a></li>
+                    <li><a href="{% url 'list_categorias' %}">. Categorio Proyecto</a></li>
+                    <li><a href="{% url 'list_tipo_recursos' %}">. Tipo de Recurso</a></li>
+                    <li><a href="{% url 'list_unidades' %}">. Unidad de Medida</a></li>
                     <!-- Agrega más subítems aquí si es necesario -->
                 </ul>
             </li>
             <li>
-                <a href="#" onclick="toggleSubmenu('personal')"><span class="fa fa-users mr-3"></span> Personal</a>
+                <a href="{% url 'list_personal' %}"onclick="toggleSubmenu('personal')"><span class="fa fa-users mr-3"></span> Personal</a>
                 <ul id="personal" class="list-unstyled" style="display: none;">
-                    <li><a href="#">Subítem 1</a></li>
-                    <li><a href="#">Subítem 2</a></li>
                     <!-- Agrega más subítems aquí si es necesario -->
                 </ul>
             </li>

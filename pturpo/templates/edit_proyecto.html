@@ -1,0 +1,71 @@
+{% extends 'sidebar.html' %}
+
+{% block content %}
+<div class="card table-card">
+    <div class="card-body">
+        <h1 class="card-title">Editar Proyecto</h1>
+        <form method="post" action="{% url 'edit_proyecto' proyecto.id %}">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="organizacion">Organización:</label>
+                <select class="form-control dark-input" name="id_organizacion">
+                    {% for organizacion in organizaciones %}
+                    <option value="{{ organizacion.id }}" {% if proyecto.id_organizacion.id == organizacion.id %}selected{% endif %}>{{ organizacion.denominacion }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="categoria">Categoría:</label>
+                <select class="form-control dark-input" name="id_categoria">
+                    {% for categoria in categorias %}
+                    <option value="{{ categoria.id }}" {% if proyecto.id_categoria.id == categoria.id %}selected{% endif %}>{{ categoria.categoria }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-row">
+                <div class="col-md-6 form-group">
+                    <label for="nom_proyecto">Nombre del Proyecto:</label>
+                    <input type="text" class="form-control dark-input" name="nom_proyecto" value="{{ proyecto.nom_proyecto }}" required>
+                </div>
+                <div class="col-md-6 form-group">
+                    <label for="prioridad">Prioridad:</label>
+                    <input type="text" class="form-control dark-input" name="prioridad" value="{{ proyecto.prioridad }}" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="f_registro">Fecha de Registro:</label>
+                <input type="datetime-local" class="form-control dark-input" name="f_registro" value="{{ proyecto.f_registro|date:'Y-m-d\TH:i' }}">
+            </div>
+            <div class="form-row">
+                <div class="col-md-6 form-group">
+                    <label for="f_inicio_p">Fecha de Inicio:</label>
+                    <input type="date" class="form-control dark-input" name="f_inicio_p" value="{{ proyecto.f_inicio_p|date:'Y-m-d' }}">
+                </div>
+                <div class="col-md-6 form-group">
+                    <label for="f_final_p">Fecha de Finalización:</label>
+                    <input type="date" class="form-control dark-input" name="f_final_p" value="{{ proyecto.f_final_p|date:'Y-m-d' }}">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="col-md-6 form-group">
+                    <label for="presupuesto_p_t">Presupuesto Total:</label>
+                    <input type="number" class="form-control dark-input" name="presupuesto_p_t" step="0.01" value="{{ proyecto.presupuesto_p_t }}">
+                </div>
+                <div class="col-md-6 form-group">
+                    <label for="num_presupuesto_doc">Número de Presupuesto:</label>
+                    <input type="number" class="form-control dark-input" name="num_presupuesto_doc" value="{{ proyecto.num_presupuesto_doc }}">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="observaciones">Observaciones:</label>
+                <input type="text" class="form-control dark-input" name="observaciones" value="{{ proyecto.observaciones }}">
+            </div>
+            <div class="form-group">
+                <label for="estado">Estado:</label>
+                <input type="text" class="form-control dark-input" name="estado" value="{{ proyecto.estado }}">
+            </div>
+            <button type="submit" class="btn btn-success">Guardar Cambios</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

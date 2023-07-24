@@ -1,0 +1,77 @@
+{% extends 'sidebar.html' %}
+
+{% block content %}
+<div class="card table-card">
+    <h1>Listado de Recursos</h1>
+    <a href="{% url 'create_recurso' %}" class="btn btn-success">Crear Nuevo Recurso</a>
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover table-sm">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Tarea</th>
+                    <th>Tipo de Recurso</th>
+                    <th>Detalle o Nombre</th>
+                    <th>Número de Factura</th>
+                    <th>Cantidad</th>
+                    <th>Unidad de Medida</th>
+                    <th>Precio</th>
+                    <th class="small-cell">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for recurso in recursos %}
+                <tr>
+                    <td>{{ recurso.id }}</td>
+                    <td>{{ recurso.id_tarea.nom_tarea }}</td>
+                    <td>{{ recurso.id_tipo_r.tipo_r }}</td>
+                    <td>{{ recurso.detalle_nom_p }}</td>
+                    <td>{{ recurso.num_factura_idp }}</td>
+                    <td>{{ recurso.cantidad }}</td>
+                    <td>{{ recurso.id_unidad_m.unidad }}</td>
+                    <td>{{ recurso.precio }}</td>
+                    <td class="small-cell">
+                        <a href="{% url 'edit_recurso' recurso.id %}" class="btn btn-warning btn-sm mr-2">Editar</a>
+                        <button onclick="showModal({{ recurso.id }})" class="btn btn-danger btn-sm">Eliminar</button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Modal para confirmar la eliminación -->
+    <div class="modal fade" id="confirmModal" tabindex="-1" role="dialog" aria-labelledby="confirmModalLabel"
+      aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="confirmModalLabel">¿Estás seguro de que deseas eliminar este recurso?</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <p>Esta acción no se puede deshacer.</p>
+          </div>
+          <div class="modal-footer">
+            <form id="deleteForm" method="post" action="{% url 'delete_recurso' %}">
+              {% csrf_token %}
+              <input type="hidden" name="recurso_id" id="recursoId" value="">
+              <button type="submit" class="btn btn-danger">Confirmar</button>
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+      function showModal(recursoId) {
+        document.getElementById("recursoId").value = recursoId;
+        $('#confirmModal').modal('show');
+      }
+    </script>
+</div>
+{% endblock %}

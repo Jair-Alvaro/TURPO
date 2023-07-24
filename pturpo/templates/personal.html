@@ -1,0 +1,85 @@
+{% extends 'sidebar.html' %}
+
+{% block content %}
+<div class="card table-card">
+    <h1>Listado de Personal</h1>
+    <a href="{% url 'crear_personal' %}" class="btn btn-success">Crear Nuevo Personal</a>
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover table-sm">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Apellido</th>
+                    <th>Teléfono</th>
+                    <th>Cargo</th>
+                    <th>Nombre de Referencia</th>
+                    <th>Vínculo</th>
+                    <th>Teléfono de Referencia</th>
+                    <th>Dirección</th>
+                    <th>Departamento</th>
+                    <th>Provincia</th>
+                    <th>Distrito</th>
+                    <th class="small-cell">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for persona in personal %}
+                <tr>
+                    <td>{{ persona.id }}</td>
+                    <td>{{ persona.nombre_personal }}</td>
+                    <td>{{ persona.apell_personal }}</td>
+                    <td>{{ persona.telefono_p }}</td>
+                    <td>{{ persona.cargo_p }}</td>
+                    <td>{{ persona.nom_referencia }}</td>
+                    <td>{{ persona.vinculo }}</td>
+                    <td>{{ persona.telefono_r }}</td>
+                    <td>{{ persona.direccion_p }}</td>
+                    <td>{{ persona.departamento_p }}</td>
+                    <td>{{ persona.provincia_p }}</td>
+                    <td>{{ persona.distrito_p }}</td>
+                    <td class="small-cell">
+                        <a href="{% url 'edit_personal' persona.id %}" class="btn btn-warning btn-sm mr-2">Editar</a>
+                        <button onclick="showModal({{ persona.id }})" class="btn btn-danger btn-sm">Eliminar</button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <!-- Modal para confirmar la eliminación -->
+    <div class="modal fade" id="confirmModal" tabindex="-1" role="dialog" aria-labelledby="confirmModalLabel"
+      aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="confirmModalLabel">¿Estás seguro de que deseas eliminar este registro de personal?</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <p>Esta acción no se puede deshacer.</p>
+          </div>
+          <div class="modal-footer">
+            <form id="deleteForm" method="post" action="{% url 'delete_personal' %}">
+              {% csrf_token %}
+              <input type="hidden" name="personal_id" id="personalId" value="">
+              <button type="submit" class="btn btn-danger">Confirmar</button>
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- JavaScript -->
+    <script>
+      function showModal(personalId) {
+        document.getElementById("personalId").value = personalId;
+        $('#confirmModal').modal('show');
+      }
+    </script>
+</div>
+{% endblock %}

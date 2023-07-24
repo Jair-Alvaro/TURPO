@@ -1,0 +1,57 @@
+{% extends 'sidebar.html' %}
+
+{% block content %}
+<div class="card">
+    <div class="card-body">
+        <h1 class="card-title">Crear Recurso</h1>
+        <form method="post" action="{% url 'create_recurso' %}">
+            {% csrf_token %}
+            <div class="form-row">
+                <div class="col-md-4 form-group">
+                    <label for="tarea">Tarea:</label>
+                    <select class="form-control dark-input" name="tarea">
+                        {% for tarea in tareas %}
+                        <option value="{{ tarea.id }}">{{ tarea.nom_tarea }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-4 form-group">
+                    <label for="tipo_recurso">Tipo de Recurso:</label>
+                    <select class="form-control dark-input" name="tipo_recurso">
+                        {% for tipo_recurso in tipos_recurso %}
+                        <option value="{{ tipo_recurso.id }}">{{ tipo_recurso.tipo_r }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-4 form-group">
+                    <label for="detalle_nombre">Detalle o Nombre:</label>
+                    <input type="text" class="form-control dark-input" name="detalle_nombre">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="col-md-4 form-group">
+                    <label for="numero_factura">Número de Factura:</label>
+                    <input type="number" class="form-control dark-input" name="numero_factura">
+                </div>
+                <div class="col-md-4 form-group">
+                    <label for="cantidad">Cantidad:</label>
+                    <input type="number" class="form-control dark-input" name="cantidad">
+                </div>
+                <div class="col-md-4 form-group">
+                    <label for="unidad_medida">Unidad de Medida:</label>
+                    <select class="form-control dark-input" name="unidad_medida">
+                        {% for unidad_medida in unidades_medida %}
+                        <option value="{{ unidad_medida.id }}">{{ unidad_medida.unidad }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="precio">Precio:</label>
+                <input type="number" step="0.01" class="form-control dark-input" name="precio">
+            </div>
+            <button type="submit">Guardar</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
