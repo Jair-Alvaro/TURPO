@@ -41,6 +41,7 @@
             <div class="form-group">
                 <label for="relacion">Relación Comercial:</label>
                 <select class="form-control dark-input" name="relacion">
+                    <option value="">Seleccionar relación comercial</option> <!-- Agrega esta línea -->
                     {% for relacion in relaciones %}
                     <option value="{{ relacion.id }}">{{ relacion.relacion }}</option>
                     {% endfor %}

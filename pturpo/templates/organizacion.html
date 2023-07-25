@@ -1,6 +1,14 @@
 {% extends 'sidebar.html' %}
 
 {% block content %}
+{% if messages %}
+  <ul class="messages">
+    {% for message in messages %}
+      <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+    {% endfor %}
+  </ul>
+{% endif %}
+
 <div class="card table-card">
     <h1>Listado de Organizaciones</h1>
     <a href="{% url 'crear_organizacion' %}" class="btn btn-success">Crear Nueva Organización</a>

@@ -30,10 +30,14 @@
 
         <ul class="list-unstyled components mb-5">
             <li class="active">
-              <a href="{% url 'reseña' %}"><span class="fa fa-home mr-3"></span> Reseña</a>
+                <a href="{% url 'reseña' %}" style="font-size: 18px; color: #fff;">
+                    <span class="fa fa-home mr-3"></span> Reseña
+                  </a>
             </li>
             <li>
-                <a href="#" onclick="toggleSubmenu('organizacion')"><span class="fa fa-building mr-3"></span> Organización</a>
+                <a onclick="toggleSubmenu('organizacion')" style="font-size: 18px; color: #fff;">
+                    <span class="fa fa-building mr-3"></span> Organización
+                  </a>
                 <ul id="organizacion" class="list-unstyled" style="display: none;">
                     <li><a href="{% url 'list_relaciones' %}">. Relación Comercial</a></li>
                     <li><a href="{% url 'list_organizaciones' %}">. Entidad - Empresa</a></li>
@@ -42,7 +46,9 @@
                 </ul>
             </li>
             <li>
-                <a href="#" onclick="toggleSubmenu('proyectos')"><span class="fa fa-folder-open mr-3"></span> Proyectos</a>
+                <a onclick="toggleSubmenu('proyectos')" style="font-size: 18px; color: #fff;">
+                    <span class="fa fa-folder-open mr-3"></span> Proyectos
+                  </a>
                 <ul id="proyectos" class="list-unstyled" style="display: none;">
                     <li><a href="{% url 'list_proyectos' %}">. Proyectos</a></li>
                     <li><a href="{% url 'list_tareas' %}">. Tareas</a></li>
@@ -54,7 +60,9 @@
                 </ul>
             </li>
             <li>
-                <a href="{% url 'list_personal' %}"onclick="toggleSubmenu('personal')"><span class="fa fa-users mr-3"></span> Personal</a>
+                <a href="{% url 'list_personal' %}" onclick="toggleSubmenu('personal')" style="font-size: 18px; color: #fff;">
+                    <span class="fa fa-users mr-3"></span> Personal
+                  </a>
                 <ul id="personal" class="list-unstyled" style="display: none;">
                     <!-- Agrega más subítems aquí si es necesario -->
                 </ul>
@@ -65,7 +73,7 @@
     <!-- Page Content  -->
     <div id="content" class="p-4 p-md-5 pt-5">
         {% block content %}
-        <!--Contenido -->
+        <!-- Contenido -->
         {% endblock %}
     </div>
 </div>
@@ -77,15 +85,34 @@
 <script src="{% static 'JS/navbar.js' %}"></script>
 
 <script>
+    // Variables para almacenar los ítems de menú abiertos actualmente
+    var activeMenuItems = [];
+
+    // Función para desplegar o cerrar los submenús
     function toggleSubmenu(id) {
         var submenu = document.getElementById(id);
-        if (submenu.style.display === 'none') {
-            submenu.style.display = 'block';
-        } else {
+        var index = activeMenuItems.indexOf(id);
+
+        if (index !== -1) {
+            // Si el submenú ya está abierto, ciérralo y actualiza la lista de ítems activos
             submenu.style.display = 'none';
+            activeMenuItems.splice(index, 1);
+        } else {
+            // Si el submenú no está abierto, cierra todos los ítems activos previamente
+            for (var i = 0; i < activeMenuItems.length; i++) {
+                var activeSubmenu = document.getElementById(activeMenuItems[i]);
+                activeSubmenu.style.display = 'none';
+            }
+            // Limpia la lista de ítems activos y abre el submenú actual
+            activeMenuItems = [];
+            activeMenuItems.push(id);
+            submenu.style.display = 'block';
         }
     }
 </script>
 
 </body>
 </html>
+
+
+

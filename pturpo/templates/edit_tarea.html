@@ -6,33 +6,39 @@
         <h1 class="card-title">Editar Tarea</h1>
         <form method="post" action="{% url 'edit_tarea' tarea.id %}">
             {% csrf_token %}
-            <div class="form-group">
-                <label for="id_proyecto">Proyecto:</label>
-                <select class="form-control dark-input" name="id_proyecto">
-                    {% for proyecto in proyectos %}
-                    <option value="{{ proyecto.id }}" {% if tarea.id_proyecto.id == proyecto.id %}selected{% endif %}>{{ proyecto.nom_proyecto }}</option>
-                    {% endfor %}
-                </select>
+            <div class="form-row">
+                <div class="col-md-6 form-group">
+                    <label for="id_proyecto">Proyecto:</label>
+                    <select class="form-control dark-input" name="id_proyecto">
+                        {% for proyecto in proyectos %}
+                        <option value="{{ proyecto.id }}" {% if tarea.id_proyecto.id == proyecto.id %}selected{% endif %}>{{ proyecto.nom_proyecto }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-6 form-group">
+                    <label for="nom_tarea">Nombre de la Tarea:</label>
+                    <input type="text" class="form-control dark-input" name="nom_tarea" value="{{ tarea.nom_tarea }}" required>
+                </div>
             </div>
-            <div class="form-group">
-                <label for="nom_tarea">Nombre de la Tarea:</label>
-                <input type="text" class="form-control dark-input" name="nom_tarea" value="{{ tarea.nom_tarea }}" required>
+            <div class="form-row">
+                <div class="col-md-6 form-group">
+                    <label for="f_inicio_t">Fecha de Inicio:</label>
+                    <input type="date" class="form-control dark-input" name="f_inicio_t" value="{{ tarea.f_inicio_t|date:'Y-m-d' }}" placeholder="YYYY-MM-DD" onchange="calculateDays()">
+                </div>
+                <div class="col-md-6 form-group">
+                    <label for="f_final_t">Fecha de Finalización:</label>
+                    <input type="date" class="form-control dark-input" name="f_final_t" value="{{ tarea.f_final_t|date:'Y-m-d' }}" placeholder="YYYY-MM-DD" onchange="calculateDays()">
+                </div>
             </div>
-            <div class="form-group">
-                <label for="f_inicio_t">Fecha de Inicio:</label>
-                <input type="date" class="form-control dark-input" name="f_inicio_t" value="{{ tarea.f_inicio_t|date:'Y-m-d' }}" placeholder="YYYY-MM-DD">
-            </div>
-            <div class="form-group">
-                <label for="f_final_t">Fecha de Finalización:</label>
-                <input type="date" class="form-control dark-input" name="f_final_t" value="{{ tarea.f_final_t|date:'Y-m-d' }}" placeholder="YYYY-MM-DD">
-            </div>
-            <div class="form-group">
-                <label for="dias">Días:</label>
-                <input type="number" class="form-control dark-input" name="dias" value="{{ tarea.dias }}" required>
-            </div>
-            <div class="form-group">
-                <label for="presupuesto_t">Presupuesto:</label>
-                <input type="number" class="form-control dark-input" name="presupuesto_t" step="0.01" value="{{ tarea.presupuesto_t }}" required>
+            <div class="form-row">
+                <div class="col-md-6 form-group">
+                    <label for="dias">Días:</label>
+                    <input type="number" class="form-control dark-input" name="dias" id="dias" value="{{ tarea.dias }}" required>
+                </div>
+                <div class="col-md-6 form-group">
+                    <label for="presupuesto_t">Presupuesto:</label>
+                    <input type="number" class="form-control dark-input" name="presupuesto_t" step="0.01" value="{{ tarea.presupuesto_t }}" required>
+                </div>
             </div>
             <div class="form-group">
                 <label for="notas">Notas:</label>
@@ -40,10 +46,28 @@
             </div>
             <div class="form-group">
                 <label for="estado">Estado:</label>
-                <input type="text" class="form-control dark-input" name="estado" value="{{ tarea.estado }}">
+                <select class="form-control dark-input" name="estado">
+                    <option value="">Seleccionar Estado</option>
+                    <option value="En Espera" {% if tarea.estado == 'En Espera' %}selected{% endif %}>En Espera</option>
+                    <option value="En Progreso" {% if tarea.estado == 'En Progreso' %}selected{% endif %}>En Progreso</option>
+                    <option value="Pendiente" {% if tarea.estado == 'Pendiente' %}selected{% endif %}>Pendiente</option>
+                    <option value="Completado" {% if tarea.estado == 'Completado' %}selected{% endif %}>Completado</option>
+                    <option value="Cancelado" {% if tarea.estado == 'Cancelado' %}selected{% endif %}>Cancelado</option>
+                </select>
             </div>
             <button type="submit" class="btn btn-success">Guardar Cambios</button>
         </form>
     </div>
 </div>
+
+<script>
+    function calculateDays() {
+        const fechaInicio = new Date(document.getElementsByName('f_inicio_t')[0].value);
+        const fechaFinal = new Date(document.getElementsByName('f_final_t')[0].value);
+        if (!isNaN(fechaInicio) && !isNaN(fechaFinal)) {
+            const dias = Math.floor((fechaFinal - fechaInicio) / (1000 * 60 * 60 * 24)) + 1;
+            document.getElementById('dias').value = dias;
+        }
+    }
+</script>
 {% endblock %}

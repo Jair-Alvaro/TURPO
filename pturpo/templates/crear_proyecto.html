@@ -9,6 +9,7 @@
             <div class="form-group">
                 <label for="organizacion">Organización:</label>
                 <select class="form-control dark-input" name="id_organizacion">
+                    <option value="">Seleccionar organización</option> <!-- Agrega esta línea -->
                     {% for organizacion in organizaciones %}
                     <option value="{{ organizacion.id }}">{{ organizacion.denominacion }}</option>
                     {% endfor %}
@@ -17,6 +18,7 @@
             <div class="form-group">
                 <label for="categoria">Categoría:</label>
                 <select class="form-control dark-input" name="id_categoria">
+                    <option value="">Seleccionar categoría</option> <!-- Agrega esta línea -->
                     {% for categoria in categorias %}
                     <option value="{{ categoria.id }}">{{ categoria.categoria }}</option>
                     {% endfor %}

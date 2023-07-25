@@ -1,6 +1,14 @@
 {% extends 'sidebar.html' %}
 
 {% block content %}
+{% if messages %}
+  <ul class="messages">
+    {% for message in messages %}
+      <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+    {% endfor %}
+  </ul>
+{% endif %}
+
 <div class="card table-card">
   <h1>Crear nueva relación comercial</h1>
   <form method="post" action="{% url 'create_relacion' %}">

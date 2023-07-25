@@ -17,22 +17,32 @@
                 </div>
                 <div class="col-md-4 form-group">
                     <label for="tipo_recurso">Tipo de Recurso:</label>
-                    <select class="form-control dark-input" name="tipo_recurso">
+                    <select class="form-control dark-input" name="tipo_recurso" id="tipo_recurso">
+                        <option value="">Seleccionar tipo recurso</option> <!-- Agrega esta línea -->
                         {% for tipo_recurso in tipos_recurso %}
-                        <option value="{{ tipo_recurso.id }}">{{ tipo_recurso.tipo_r }}</option>
+                        <option value="{{ tipo_recurso.tipo_r }}">{{ tipo_recurso.tipo_r }}</option>
                         {% endfor %}
                     </select>
                 </div>
-                <div class="col-md-4 form-group">
-                    <label for="detalle_nombre">Detalle o Nombre:</label>
-                    <input type="text" class="form-control dark-input" name="detalle_nombre">
+                <div class="col-md-4 form-group" id="detalle_div">
+                    <label for="detalle_nom_p">Detalle:</label>
+                    <input type="text" class="form-control dark-input" name="detalle_nom_p" id="detalle_nom_p">
+                </div>
+                <div class="col-md-4 form-group" id="personal_div" style="display:none;">
+                    <label for="personal_id">Personal:</label>
+                    <select class="form-control dark-input" name="personal_id" id="personal_id">
+                        <option value="">Seleccionar personal</option> <!-- Agrega esta línea -->
+                        {% for personal in personal_list %}
+                        <option value="{{ personal.id }}">{{ personal.nombre_personal }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-4 form-group" id="numero_factura_div" style="display:none;">
+                    <label for="numero_factura">Número de Factura:</label>
+                    <input type="text" class="form-control dark-input" name="numero_factura" id="numero_factura">
                 </div>
             </div>
             <div class="form-row">
-                <div class="col-md-4 form-group">
-                    <label for="numero_factura">Número de Factura:</label>
-                    <input type="number" class="form-control dark-input" name="numero_factura">
-                </div>
                 <div class="col-md-4 form-group">
                     <label for="cantidad">Cantidad:</label>
                     <input type="number" class="form-control dark-input" name="cantidad">
@@ -40,18 +50,40 @@
                 <div class="col-md-4 form-group">
                     <label for="unidad_medida">Unidad de Medida:</label>
                     <select class="form-control dark-input" name="unidad_medida">
+                        <option value="">Seleccionar unidad de medida</option> <!-- Agrega esta línea -->
                         {% for unidad_medida in unidades_medida %}
                         <option value="{{ unidad_medida.id }}">{{ unidad_medida.unidad }}</option>
                         {% endfor %}
                     </select>
                 </div>
-            </div>
-            <div class="form-group">
-                <label for="precio">Precio:</label>
-                <input type="number" step="0.01" class="form-control dark-input" name="precio">
+                <div class="col-md-4 form-group">
+                    <label for="precio">Precio:</label>
+                    <input type="number" step="0.01" class="form-control dark-input" name="precio">
+                </div>
             </div>
             <button type="submit">Guardar</button>
         </form>
     </div>
 </div>
+
+<script>
+document.getElementById("tipo_recurso").addEventListener("change", function() {
+    const detalleDiv = document.getElementById("detalle_div");
+    const personalDiv = document.getElementById("personal_div");
+    const numeroFacturaDiv = document.getElementById("numero_factura_div");
+    
+    if (this.value === "Humano") {
+        detalleDiv.style.display = "none";
+        personalDiv.style.display = "block";
+        numeroFacturaDiv.style.display = "none";
+        document.getElementById("detalle_nom_p").value = ""; // Limpiar el campo Detalle al seleccionar "Humano"
+        document.getElementById("numero_factura").value = ""; // Limpiar el campo Número de Factura al seleccionar "Humano"
+    } else {
+        detalleDiv.style.display = "block";
+        personalDiv.style.display = "none";
+        numeroFacturaDiv.style.display = "block";
+        document.getElementById("personal_id").value = ""; // Limpiar el campo Personal al seleccionar un tipo diferente a "Humano"
+    }
+});
+</script>
 {% endblock %}

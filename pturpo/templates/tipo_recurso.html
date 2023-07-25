@@ -2,7 +2,7 @@
 
 {% block content %}
 <div class="card table-card">
-  <h1>Crear nueva relación comercial</h1>
+  <h1>Crear nuevo recurso</h1>
   <form method="post" action="{% url 'create_tipo_recurso' %}">
     {% csrf_token %}
     <input type="text" name="tipo_r" placeholder="Nombre de la relación" required>
@@ -11,13 +11,13 @@
 
   <hr>
 
-  <h1>Listado de relaciones comerciales</h1>
+  <h1>Listado de recursos</h1>
   <div class="table-responsive">
     <table class="table table-bordered table-hover table-sm">
       <thead>
         <tr>
           <th id="celdas1">ID</th>
-          <th id="celdas2">Relación Comercial</th>
+          <th id="celdas2">Recurso</th>
           <th class="small-cell">Acciones</th>
         </tr>
       </thead>

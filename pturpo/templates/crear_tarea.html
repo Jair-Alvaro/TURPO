@@ -6,35 +6,40 @@
         <h1 class="card-title">Crear Tarea</h1>
         <form method="post" action="{% url 'create_tarea' %}">
             {% csrf_token %}
-            <div class="form-group">
-                <label for="proyecto">Proyecto:</label>
-                <select class="form-control dark-input" name="id_proyecto">
-                    {% for proyecto in proyectos %}
-                    <option value="{{ proyecto.id }}">{{ proyecto.nom_proyecto }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="nom_tarea">Nombre de Tarea:</label>
-                <input type="text" class="form-control dark-input" name="nom_tarea" required>
+            <div class="form-row">
+                <div class="col-md-6 form-group">
+                    <label for="proyecto">Proyecto:</label>
+                    <select class="form-control dark-input" name="id_proyecto">
+                        <option value="">Seleccionar proyecto</option>
+                        {% for proyecto in proyectos %}
+                        <option value="{{ proyecto.id }}">{{ proyecto.nom_proyecto }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-6 form-group">
+                    <label for="nom_tarea">Nombre de Tarea:</label>
+                    <input type="text" class="form-control dark-input" name="nom_tarea" required>
+                </div>
             </div>
             <div class="form-row">
                 <div class="col-md-6 form-group">
                     <label for="f_inicio_t">Fecha de Inicio:</label>
-                    <input type="date" class="form-control dark-input" name="f_inicio_t" required>
+                    <input type="date" class="form-control dark-input" name="f_inicio_t" required onchange="updateDias()">
                 </div>
                 <div class="col-md-6 form-group">
                     <label for="f_final_t">Fecha de Finalización:</label>
-                    <input type="date" class="form-control dark-input" name="f_final_t" required>
+                    <input type="date" class="form-control dark-input" name="f_final_t" required onchange="updateDias()">
                 </div>
             </div>
-            <div class="form-group">
-                <label for="dias">Días:</label>
-                <input type="number" class="form-control dark-input" name="dias" required>
-            </div>
-            <div class="form-group">
-                <label for="presupuesto_t">Presupuesto:</label>
-                <input type="number" class="form-control dark-input" name="presupuesto_t" step="0.01" required>
+            <div class="form-row">
+                <div class="col-md-6 form-group">
+                    <label for="dias">Días:</label>
+                    <input type="number" class="form-control dark-input" name="dias" required readonly>
+                </div>
+                <div class="col-md-6 form-group">
+                    <label for="presupuesto_t">Presupuesto:</label>
+                    <input type="number" class="form-control dark-input" name="presupuesto_t" step="0.01" required>
+                </div>
             </div>
             <div class="form-group">
                 <label for="notas">Notas:</label>
@@ -42,10 +47,30 @@
             </div>
             <div class="form-group">
                 <label for="estado">Estado:</label>
-                <input type="text" class="form-control dark-input" name="estado">
+                <select class="form-control dark-input" name="estado">
+                    <option value="">Seleccionar Estado</option>
+                    <option value="En Espera">En Espera</option>
+                    <option value="En Progreso">En Progreso</option>
+                    <option value="Pendiente">Pendiente</option>
+                    <option value="Completado">Completado</option>
+                    <option value="Cancelado">Cancelado</option>
+                </select>
             </div>
             <button type="submit" class="btn btn-success btn-block">Guardar</button>
         </form>
     </div>
 </div>
+
+<script>
+    function updateDias() {
+        const fechaInicio = new Date(document.getElementsByName('f_inicio_t')[0].value);
+        const fechaFinal = new Date(document.getElementsByName('f_final_t')[0].value);
+        if (!isNaN(fechaInicio) && !isNaN(fechaFinal)) {
+            const dias = Math.floor((fechaFinal - fechaInicio) / (1000 * 60 * 60 * 24)) + 1;
+            document.getElementsByName('dias')[0].value = dias;
+        } else {
+            document.getElementsByName('dias')[0].value = "";
+        }
+    }
+</script>
 {% endblock %}

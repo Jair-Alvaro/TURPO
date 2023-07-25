@@ -29,7 +29,19 @@
                     <td>{{ tarea.dias }}</td>
                     <td>{{ tarea.presupuesto_t }}</td>
                     <td>{{ tarea.notas }}</td>
-                    <td>{{ tarea.estado }}</td>
+                    <td>
+                        {% if tarea.estado == 'En Espera' %}
+                            <span class="badge badge-secondary">{{ tarea.estado }}</span>
+                        {% elif tarea.estado == 'En Progreso' %}
+                            <span class="badge badge-primary">{{ tarea.estado }}</span>
+                        {% elif tarea.estado == 'Pendiente' %}
+                            <span class="badge badge-warning">{{ tarea.estado }}</span>
+                        {% elif tarea.estado == 'Completado' %}
+                            <span class="badge badge-success">{{ tarea.estado }}</span>
+                        {% elif tarea.estado == 'Cancelado' %}
+                            <span class="badge badge-danger">{{ tarea.estado }}</span>
+                        {% endif %}
+                    </td>
                     <td class="small-cell">
                         <a href="{% url 'edit_tarea' tarea.id %}" class="btn btn-warning btn-sm mr-2">Editar</a>
                         <button onclick="showModal({{ tarea.id }})" class="btn btn-danger btn-sm">Eliminar</button>

@@ -41,6 +41,7 @@
             <div class="form-group">
                 <label for="relacion">Organizacion:</label>
                 <select class="form-control dark-input" name="relacion">
+                    <option value="">Seleccionar Organizacion</option>
                     {% for organizacion in organizaciones %}
                     <option value="{{ organizacion.id }}">{{ organizacion.denominacion }}</option>
                     {% endfor %}

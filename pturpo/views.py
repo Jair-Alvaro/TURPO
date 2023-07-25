@@ -1,4 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.db import transaction
+from django.contrib import messages
 from .models import *
 
 def home_view(request):
@@ -27,9 +29,14 @@ def delete_relacion(request):
     if request.method == 'POST':
         relacion_id = request.POST['relacion_id']
         relacion = get_object_or_404(TblRelacioncomercial, id=relacion_id)
-        relacion.delete()
-        return redirect('list_relaciones')
 
+        # Verificar si hay registros asociados en el otro modelo usando la ForeignKey 'id_relacion'
+        if TblOrganizacion.objects.filter(id_relacion=relacion).exists():
+            messages.error(request, 'No puedes eliminar esta relación comercial porque está siendo utilizada en otras organizaciones.')
+        else:
+            relacion.delete()
+            messages.success(request, 'La relación comercial ha sido eliminada exitosamente.')
+    
     return redirect('list_relaciones')
 
 def create_organizacion(request):
@@ -101,10 +108,15 @@ def delete_organizacion(request):
     if request.method == 'POST':
         organizacion_id = request.POST.get('organizacion_id')
         organizacion = get_object_or_404(TblOrganizacion, id=organizacion_id)
-        organizacion.delete()
-        return redirect('list_organizaciones')
 
-    return redirect('list_organizaciones')
+        # Verificar si hay registros asociados en el otro modelo usando la ForeignKey 'id_organizacion'
+        if TblProyecto.objects.filter(id_organizacion=organizacion).exists():
+            messages.error(request, 'No puedes eliminar esta organización porque está siendo utilizada en otros proyectos.')
+        else:
+            organizacion.delete()
+            messages.success(request, 'La organización ha sido eliminada exitosamente.')
+
+        return redirect('list_organizaciones')
 
 def create_contacto(request):
     if request.method == 'POST':
@@ -512,47 +524,70 @@ def edit_personal(request, personal_id):
 def delete_personal(request):
     if request.method == 'POST':
         personal_id = request.POST.get('personal_id')
-        # Obtener el objeto TblPersonal correspondiente al ID proporcionado y eliminarlo
         personal = get_object_or_404(TblPersonal, id=personal_id)
-        personal.delete()
-        return redirect('list_personal')
+
+        # Verificar si hay registros asociados en el otro modelo usando la ForeignKey 'personal_id'
+        if TblRecurso.objects.filter(num_factura_idp=personal_id).exists():
+            messages.error(request, 'No puedes eliminar este personal porque está siendo utilizado en otros recursos.')
+        else:
+            personal.delete()
+            messages.success(request, 'El personal ha sido eliminado exitosamente.')
 
     return redirect('list_personal')
+
 
 def create_recurso(request):
     if request.method == 'POST':
         id_tarea = request.POST['tarea']
-        id_tipo_r = request.POST['tipo_recurso']
-        detalle_nom_p = request.POST.get('detalle_nombre')
-        num_factura_idp = request.POST.get('numero_factura')
+        id_tipo_r_value = request.POST['tipo_recurso']
+
+        # Obtener el ID del tipo de recurso a partir de su valor (buscándolo en la base de datos)
+        tipo_recurso = get_object_or_404(TblTipoR, tipo_r=id_tipo_r_value)
+        id_tipo_r = tipo_recurso.id
+
         cantidad = request.POST.get('cantidad')
         id_unidad_m = request.POST.get('unidad_medida')
         precio = request.POST.get('precio')
 
-        TblRecurso.objects.create(
-            id_tarea_id=id_tarea,
-            id_tipo_r_id=id_tipo_r,
-            detalle_nom_p=detalle_nom_p,
-            num_factura_idp=num_factura_idp,
-            cantidad=cantidad,
-            id_unidad_m_id=id_unidad_m,
-            precio=precio
-        )
+        # Obtener el detalle o el personal_id dependiendo del tipo de recurso seleccionado
+        detalle_nom_p = request.POST.get('detalle_nom_p')
+        num_factura_idp = request.POST.get('numero_factura')
+
+        if id_tipo_r_value == 'Humano':
+            personal_id = request.POST.get('personal_id')
+            # Obtener el objeto TblPersonal correspondiente al ID proporcionado
+            personal = get_object_or_404(TblPersonal, id=personal_id)
+            detalle_nom_p = f"{personal.nombre_personal} {personal.apell_personal}"
+            num_factura_idp = personal_id
+
+        with transaction.atomic():
+            # Utilizar atomic transaction para asegurar que se guarden todos los datos o ninguno en caso de error
+            TblRecurso.objects.create(
+                id_tarea_id=id_tarea,
+                id_tipo_r_id=id_tipo_r,
+                detalle_nom_p=detalle_nom_p,
+                num_factura_idp=num_factura_idp,
+                cantidad=cantidad,
+                id_unidad_m_id=id_unidad_m,
+                precio=precio
+            )
         return redirect('list_recursos')
 
-    # Obtener las listas de tareas, tipos de recursos y unidades de medida
     tareas = TblTarea.objects.all()
     tipos_recurso = TblTipoR.objects.all()
     unidades_medida = TblUnidadM.objects.all()
+    personal_list = TblPersonal.objects.all()
 
     return render(request, 'crear_recurso.html', {
         'tareas': tareas,
         'tipos_recurso': tipos_recurso,
         'unidades_medida': unidades_medida,
+        'personal_list': personal_list,
     })
 def list_recursos(request):
     recursos = TblRecurso.objects.all()
     return render(request, 'recurso.html', {'recursos': recursos})
+
 def edit_recurso(request, recurso_id):
     recurso = get_object_or_404(TblRecurso, id=recurso_id)
 
@@ -577,7 +612,6 @@ def edit_recurso(request, recurso_id):
 
         return redirect('list_recursos')
 
-    # Obtener las listas de tareas, tipos de recursos y unidades de medida
     tareas = TblTarea.objects.all()
     tipos_recurso = TblTipoR.objects.all()
     unidades_medida = TblUnidadM.objects.all()
@@ -588,6 +622,7 @@ def edit_recurso(request, recurso_id):
         'tipos_recurso': tipos_recurso,
         'unidades_medida': unidades_medida,
     })
+
 def delete_recurso(request):
     if request.method == 'POST':
         recurso_id = request.POST.get('recurso_id')

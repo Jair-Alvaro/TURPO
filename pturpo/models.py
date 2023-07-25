@@ -86,7 +86,7 @@ class TblRecurso(models.Model):
     id_tarea = models.ForeignKey('TblTarea', models.DO_NOTHING, db_column='id_tarea', blank=True, null=True)
     id_tipo_r = models.ForeignKey('TblTipoR', models.DO_NOTHING, db_column='id_tipo_r', blank=True, null=True)
     detalle_nom_p = models.CharField(max_length=200, blank=True, null=True)
-    num_factura_idp = models.DecimalField(max_digits=10, decimal_places=0, blank=True, null=True)
+    num_factura_idp = models.IntegerField(blank=True, null=True) 
     cantidad = models.DecimalField(max_digits=10, decimal_places=0, blank=True, null=True)
     id_unidad_m = models.ForeignKey('TblUnidadM', models.DO_NOTHING, db_column='id_unidad_m', blank=True, null=True)
     precio = models.DecimalField(max_digits=15, decimal_places=2, blank=True, null=True)
