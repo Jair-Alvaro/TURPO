@@ -2,11 +2,11 @@
 
 {% block content %}
 {% if messages %}
-  <ul class="messages">
+<div class="alert alert-warning">
     {% for message in messages %}
       <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
     {% endfor %}
-  </ul>
+  </div>
 {% endif %}
 
 <div class="card table-card">
@@ -78,6 +78,17 @@
     
     <!-- JavaScript -->
     <script>
+        function ocultarAlerta() {
+    const alerta = document.querySelector(".alert");
+    if (alerta) {
+      setTimeout(function() {
+        alerta.style.display = "none";
+      }, 3000); // Ocultar la alerta después de 2000 milisegundos (2 segundos)
+    }
+  }
+  // Llamar a la función para ocultar la alerta después de cargar la página
+  document.addEventListener("DOMContentLoaded", ocultarAlerta);
+  
       function showModal(organizacionId) {
         document.getElementById("organizacionId").value = organizacionId;
         $('#confirmModal').modal('show');

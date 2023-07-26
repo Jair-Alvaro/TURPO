@@ -12,7 +12,8 @@
                     <select class="form-control dark-input" name="id_proyecto">
                         <option value="">Seleccionar proyecto</option>
                         {% for proyecto in proyectos %}
-                        <option value="{{ proyecto.id }}">{{ proyecto.nom_proyecto }}</option>
+                            <option value="{{ proyecto.id }}"
+                                {% if forloop.first %}selected{% endif %}>{{ proyecto.nom_proyecto }}</option>
                         {% endfor %}
                     </select>
                 </div>

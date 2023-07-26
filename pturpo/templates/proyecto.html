@@ -1,8 +1,27 @@
 {% extends 'sidebar.html' %}
 
 {% block content %}
+{% if messages %}
+<div class="alert alert-warning">
+    {% for message in messages %}
+      <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+    {% endfor %}
+  </div>
+{% endif %}
 <div class="card table-card">
     <h1>Listado de Proyectos</h1>
+    <form method="get" class="form-inline mb-3">
+        <div class="form-group mr-2">
+            <label for="organizacion_id">Filtrar por Organización:</label>
+            <select name="organizacion_id" id="organizacion_id" class="form-control">
+                <option value="">Todas las Organizaciones</option>
+                {% for organizacion in organizaciones %}
+                <option value="{{ organizacion.id }}" {% if organizacion.id == request.GET.organizacion_id %}selected{% endif %}>{{ organizacion.denominacion }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <button type="submit" class="btn btn-dark">Filtrar</button>
+    </form>
     <a href="{% url 'crear_proyecto' %}" class="btn btn-success">Crear Nuevo Proyecto</a>
     <div class="table-responsive">
         <table class="table table-bordered table-hover table-sm">
@@ -16,9 +35,11 @@
                     <th>Fecha de Registro</th>
                     <th>Fecha de Inicio</th>
                     <th>Fecha de Finalización</th>
-                    <th>Presupuesto Total</th>
                     <th>Número de Presupuesto</th>
+                    <th>Presupuesto Total</th>
+                    <th>Gasto Real</th>
                     <th>Observaciones</th>
+                    <th>Porcentaje</th>
                     <th>Estado</th>
                     <th class="small-cell">Acciones</th>
                 </tr>
@@ -34,10 +55,24 @@
                     <td>{{ proyecto.f_registro }}</td>
                     <td>{{ proyecto.f_inicio_p }}</td>
                     <td>{{ proyecto.f_final_p }}</td>
-                    <td>{{ proyecto.presupuesto_p_t }}</td>
                     <td>{{ proyecto.num_presupuesto_doc }}</td>
+                    <td class="Presupuesto">S/.{{ proyecto.presupuesto_p_t }}</td>
+                    <td class="font-weight-bold text-purple gasto-real">S/.{{ proyecto.uso_recursos }}</td>
                     <td>{{ proyecto.observaciones }}</td>
-                    <td>{{ proyecto.estado }}</td>
+                    <td>{{ proyecto.porcentaje_tareas_completadas }} %</td>
+                    <td>
+                        {% if proyecto.estado == 'En Espera' %}
+                        <span class="badge badge-secondary">{{ proyecto.estado }}</span>
+                        {% elif proyecto.estado == 'En Progreso' %}
+                        <span class="badge badge-primary">{{ proyecto.estado }}</span>
+                        {% elif proyecto.estado == 'Pendiente' %}
+                        <span class="badge badge-warning">{{ proyecto.estado }}</span>
+                        {% elif proyecto.estado == 'Completado' %}
+                        <span class="badge badge-success">{{ proyecto.estado }}</span>
+                        {% elif proyecto.estado == 'Cancelado' %}
+                        <span class="badge badge-danger">{{ proyecto.estado }}</span>
+                        {% endif %}
+                    </td>
                     <td class="small-cell">
                         <a href="{% url 'edit_proyecto' proyecto.id %}" class="btn btn-warning btn-sm mr-2">Editar</a>
                         <button onclick="showModal({{ proyecto.id }})" class="btn btn-danger btn-sm">Eliminar</button>
@@ -47,7 +82,6 @@
             </tbody>
         </table>
     </div>
-    
     <!-- Modal para confirmar la eliminación -->
     <div class="modal fade" id="confirmModal" tabindex="-1" role="dialog" aria-labelledby="confirmModalLabel"
       aria-hidden="true">
@@ -76,10 +110,42 @@
     
     <!-- JavaScript -->
     <script>
+    function ocultarAlerta() {
+    const alerta = document.querySelector(".alert");
+    if (alerta) {
+      setTimeout(function() {
+        alerta.style.display = "none";
+      }, 3000); // Ocultar la alerta después de 2000 milisegundos (2 segundos)
+    }
+  }
+  // Llamar a la función para ocultar la alerta después de cargar la página
+  document.addEventListener("DOMContentLoaded", ocultarAlerta);
       function showModal(proyectoId) {
         document.getElementById("proyectoId").value = proyectoId;
         $('#confirmModal').modal('show');
       }
+      function verificarGastoReal() {
+        var filas = document.querySelectorAll('.table tbody tr');
+
+        filas.forEach(function (fila) {
+            var presupuesto = parseFloat(fila.querySelector('.Presupuesto').innerText.replace('S/.', ''));
+            var gastoReal = parseFloat(fila.querySelector('.gasto-real').innerText.replace('S/.', ''));
+
+            console.log('Presupuesto:', presupuesto);
+            console.log('Gasto Real:', gastoReal);
+
+            if (gastoReal > presupuesto) {
+                fila.style.backgroundColor = 'rgba(255, 0, 0, 0.3)'; // Pone toda la fila de color rojo
+            } else {
+                fila.style.backgroundColor = ''; // Restaurar el color de fondo por defecto
+            }
+        });
+    }
+
+    // Llamar a la función de verificación después de que todos los elementos de la página estén cargados
+    document.addEventListener('DOMContentLoaded', function () {
+        verificarGastoReal();
+    });
     </script>
 </div>
 {% endblock %}

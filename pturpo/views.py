@@ -260,8 +260,55 @@ def create_proyecto(request):
         categorias = TblCategoriaP.objects.all()
         return render(request, 'crear_proyecto.html', {'organizaciones': organizaciones, 'categorias': categorias})
 def list_proyectos(request):
-    proyectos = TblProyecto.objects.all()
-    return render(request, 'proyecto.html', {'proyectos': proyectos})
+    organizaciones = TblOrganizacion.objects.all()  # Obtener todas las organizaciones
+
+    organizacion_id = request.GET.get('organizacion_id')  # Obtener el ID de la organización seleccionada
+
+    # Obtener todos los proyectos o filtrar por organización si se seleccionó una
+    if organizacion_id:
+        proyectos = TblProyecto.objects.filter(id_organizacion_id=organizacion_id)
+    else:
+        proyectos = TblProyecto.objects.all()
+
+    for proyecto in proyectos:
+        # Obtener las tareas asociadas a cada proyecto
+        tareas_proyecto = TblTarea.objects.filter(id_proyecto=proyecto.id)
+
+        # Calcular el gasto real para cada proyecto
+        gasto_real_proyecto = 0
+        for tarea in tareas_proyecto:
+            # Obtener los recursos asignados a cada tarea
+            recursos_asignados = TblRecurso.objects.filter(id_tarea=tarea.id)
+            # Sumar los costos de los recursos asignados a la tarea
+            gasto_tarea = sum(recurso.cantidad * recurso.precio for recurso in recursos_asignados)
+            gasto_real_proyecto += gasto_tarea
+
+        # Asignar el gasto real calculado al atributo 'uso_recursos' del proyecto
+        proyecto.uso_recursos = gasto_real_proyecto
+
+        # Contadores para tareas completadas y totales
+        tareas_completadas = 0
+        total_tareas = tareas_proyecto.count()
+
+        for tarea in tareas_proyecto:
+            # Verificar si la tarea está completada
+            if tarea.estado == 'Completado':
+                tareas_completadas += 1
+
+        # Calcular el porcentaje de tareas completadas
+        if total_tareas > 0:
+            porcentaje_completado = (tareas_completadas / total_tareas) * 100
+        else:
+            porcentaje_completado = 0
+
+        # Asignar el porcentaje de tareas completadas al atributo 'porcentaje_tareas_completadas' del proyecto
+        proyecto.porcentaje_tareas_completadas = round(porcentaje_completado, 2)
+
+    mensajes_exito = [str(m) for m in messages.get_messages(request)]
+
+    return render(request, 'proyecto.html', {'proyectos': proyectos, 'organizaciones': organizaciones, 'mensajes_exito': mensajes_exito})
+
+
 def edit_proyecto(request, proyecto_id):
     proyecto = get_object_or_404(TblProyecto, id=proyecto_id)
 
@@ -310,7 +357,13 @@ def delete_proyecto(request):
     if request.method == 'POST':
         proyecto_id = request.POST.get('proyecto_id')
         proyecto = get_object_or_404(TblProyecto, id=proyecto_id)
-        proyecto.delete()
+
+        try:
+            proyecto.delete()
+            messages.success(request, '¡El proyecto ha sido eliminado exitosamente!')
+        except Exception as e:
+            messages.error(request, 'No puedes eliminar este Proyecto porque tiene tareas y recursos asignados')
+
         return redirect('list_proyectos')
 
     return redirect('list_proyectos')
@@ -346,8 +399,28 @@ def create_tarea(request):
         proyectos = TblProyecto.objects.all()
         return render(request, 'crear_tarea.html', {'proyectos': proyectos})
 def list_tareas(request):
-    tareas = TblTarea.objects.all()
-    return render(request, 'tarea.html', {'tareas': tareas})
+    proyecto_id = request.GET.get('proyecto_id')  # Obtener el ID del proyecto seleccionado en el desplegable
+
+    # Obtener todas las tareas o filtrar por proyecto si se seleccionó uno
+    if proyecto_id:
+        tareas = TblTarea.objects.filter(id_proyecto=proyecto_id)
+    else:
+        tareas = TblTarea.objects.all()
+
+    for tarea in tareas:
+        # Calcular el uso de recursos para cada tarea
+        recursos_asignados = TblRecurso.objects.filter(id_tarea=tarea.id)
+        total_recurso = sum(recurso.cantidad * recurso.precio for recurso in recursos_asignados)
+        tarea.uso_recurso = total_recurso
+
+    mensajes_exito = [str(m) for m in messages.get_messages(request)]
+
+    # Obtener todos los proyectos para mostrar en el desplegable
+    proyectos = TblProyecto.objects.all()
+
+    return render(request, 'tarea.html', {'tareas': tareas, 'proyectos': proyectos, 'mensajes_exito': mensajes_exito})
+
+
 def edit_tarea(request, tarea_id):
     tarea = get_object_or_404(TblTarea, id=tarea_id)
     proyectos = TblProyecto.objects.all()
@@ -536,12 +609,23 @@ def delete_personal(request):
     return redirect('list_personal')
 
 
-def create_recurso(request):
-    if request.method == 'POST':
-        id_tarea = request.POST['tarea']
-        id_tipo_r_value = request.POST['tipo_recurso']
+# Resto de los imports y definiciones de vistas
 
-        # Obtener el ID del tipo de recurso a partir de su valor (buscándolo en la base de datos)
+
+def create_recurso(request):
+    tarea_id = request.GET.get('tarea_id')
+
+    if tarea_id:
+        # Si se proporcionó un ID de tarea, obtener la tarea correspondiente
+        tarea_seleccionada = get_object_or_404(TblTarea, id=tarea_id)
+    else:
+        # Si no se proporcionó un ID de tarea, establecerla como None
+        tarea_seleccionada = None
+
+    if request.method == 'POST':
+        tarea_id = request.POST.get('tarea')  # Obtener el ID de la tarea seleccionada desde el campo oculto
+
+        id_tipo_r_value = request.POST.get('tipo_recurso')
         tipo_recurso = get_object_or_404(TblTipoR, tipo_r=id_tipo_r_value)
         id_tipo_r = tipo_recurso.id
 
@@ -549,21 +633,18 @@ def create_recurso(request):
         id_unidad_m = request.POST.get('unidad_medida')
         precio = request.POST.get('precio')
 
-        # Obtener el detalle o el personal_id dependiendo del tipo de recurso seleccionado
         detalle_nom_p = request.POST.get('detalle_nom_p')
         num_factura_idp = request.POST.get('numero_factura')
 
         if id_tipo_r_value == 'Humano':
             personal_id = request.POST.get('personal_id')
-            # Obtener el objeto TblPersonal correspondiente al ID proporcionado
             personal = get_object_or_404(TblPersonal, id=personal_id)
             detalle_nom_p = f"{personal.nombre_personal} {personal.apell_personal}"
             num_factura_idp = personal_id
 
         with transaction.atomic():
-            # Utilizar atomic transaction para asegurar que se guarden todos los datos o ninguno en caso de error
             TblRecurso.objects.create(
-                id_tarea_id=id_tarea,
+                id_tarea_id=tarea_id,
                 id_tipo_r_id=id_tipo_r,
                 detalle_nom_p=detalle_nom_p,
                 num_factura_idp=num_factura_idp,
@@ -571,7 +652,11 @@ def create_recurso(request):
                 id_unidad_m_id=id_unidad_m,
                 precio=precio
             )
-        return redirect('list_recursos')
+        
+        # Agregar el mensaje de éxito aquí
+        messages.success(request, 'Recurso agregado correctamente.')
+
+        return redirect('list_tareas')
 
     tareas = TblTarea.objects.all()
     tipos_recurso = TblTipoR.objects.all()
@@ -583,10 +668,22 @@ def create_recurso(request):
         'tipos_recurso': tipos_recurso,
         'unidades_medida': unidades_medida,
         'personal_list': personal_list,
+        'tarea_seleccionada': tarea_seleccionada,
     })
+
 def list_recursos(request):
+    tarea_id = request.GET.get('tarea_id')
     recursos = TblRecurso.objects.all()
-    return render(request, 'recurso.html', {'recursos': recursos})
+
+    if tarea_id:
+        recursos = recursos.filter(id_tarea=tarea_id)
+
+    for recurso in recursos:
+        recurso.total_recurso = recurso.cantidad * recurso.precio
+
+    tareas = TblTarea.objects.all()
+
+    return render(request, 'recurso.html', {'recursos': recursos, 'tareas': tareas})
 
 def edit_recurso(request, recurso_id):
     recurso = get_object_or_404(TblRecurso, id=recurso_id)

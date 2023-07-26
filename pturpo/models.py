@@ -73,7 +73,7 @@ class TblProyecto(models.Model):
     f_inicio_p = models.DateField(blank=True, null=True)
     f_final_p = models.DateField(blank=True, null=True)
     presupuesto_p_t = models.DecimalField(max_digits=15, decimal_places=2, blank=True, null=True)
-    num_presupuesto_doc = models.DecimalField(max_digits=10, decimal_places=0, blank=True, null=True)
+    num_presupuesto_doc = models.CharField(max_length=250, blank=True, null=True)
     observaciones = models.CharField(max_length=300, blank=True, null=True)
     estado = models.CharField(max_length=200, blank=True, null=True)
 

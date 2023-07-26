@@ -6,24 +6,26 @@
         <h1 class="card-title">Crear Proyecto</h1>
         <form method="post" action="{% url 'crear_proyecto' %}">
             {% csrf_token %}
-            <div class="form-group">
+        <div class="form-row">
+            <div class="col-md-6 form-group">
                 <label for="organizacion">Organización:</label>
                 <select class="form-control dark-input" name="id_organizacion">
-                    <option value="">Seleccionar organización</option> <!-- Agrega esta línea -->
+                    <option value="">Seleccionar organización</option> 
                     {% for organizacion in organizaciones %}
                     <option value="{{ organizacion.id }}">{{ organizacion.denominacion }}</option>
                     {% endfor %}
                 </select>
             </div>
-            <div class="form-group">
+            <div class="col-md-6 form-group">
                 <label for="categoria">Categoría:</label>
                 <select class="form-control dark-input" name="id_categoria">
-                    <option value="">Seleccionar categoría</option> <!-- Agrega esta línea -->
+                    <option value="">Seleccionar categoría</option> 
                     {% for categoria in categorias %}
                     <option value="{{ categoria.id }}">{{ categoria.categoria }}</option>
                     {% endfor %}
                 </select>
             </div>
+        </div>
             <div class="form-row">
                 <div class="col-md-6 form-group">
                     <label for="nom_proyecto">Nombre del Proyecto:</label>
@@ -31,7 +33,12 @@
                 </div>
                 <div class="col-md-6 form-group">
                     <label for="prioridad">Prioridad:</label>
-                    <input type="text" class="form-control dark-input" name="prioridad" required>
+                    <select class="form-control dark-input" name="prioridad" required>
+                        <option value="">Seleccionar Prioridad</option>
+                        <option value="Alta">Alta</option>
+                        <option value="Media">Media</option>
+                        <option value="Baja">Baja</option>
+                    </select>
                 </div>
             </div>
             <div class="form-group">
@@ -55,7 +62,7 @@
                 </div>
                 <div class="col-md-6 form-group">
                     <label for="num_presupuesto_doc">Número de Presupuesto:</label>
-                    <input type="number" class="form-control dark-input" name="num_presupuesto_doc" required>
+                    <input type="text" class="form-control dark-input" name="num_presupuesto_doc" required>
                 </div>
             </div>
             <div class="form-group">
@@ -64,7 +71,14 @@
             </div>
             <div class="form-group">
                 <label for="estado">Estado:</label>
-                <input type="text" class="form-control dark-input" name="estado">
+                <select class="form-control dark-input" name="estado">
+                    <option value="">Seleccionar Estado</option>
+                    <option value="En Espera">En Espera</option>
+                    <option value="En Progreso">En Progreso</option>
+                    <option value="Pendiente">Pendiente</option>
+                    <option value="Completado">Completado</option>
+                    <option value="Cancelado">Cancelado</option>
+                </select>
             </div>
             <button type="submit" class="btn btn-success btn-block">Guardar</button>
         </form>

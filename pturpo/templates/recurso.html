@@ -3,7 +3,18 @@
 {% block content %}
 <div class="card table-card">
     <h1>Listado de Recursos</h1>
-    <a href="{% url 'create_recurso' %}" class="btn btn-success">Crear Nuevo Recurso</a>
+    <form method="get" class="form-inline mb-3">
+        <div class="form-group">
+            <label for="tarea_id" class="mr-2">Filtrar por Tarea:</label>
+            <select name="tarea_id" id="tarea_id" class="form-control mr-2">
+                <option value="">Todas las Tareas</option>
+                {% for tarea in tareas %}
+                    <option value="{{ tarea.id }}" {% if tarea.id|slugify == request.GET.tarea_id %}selected{% endif %}>{{ tarea.nom_tarea }}</option>
+                {% endfor %}
+            </select>
+            <button type="submit" class="btn btn-dark">Filtrar</button>
+        </div>
+    </form>
     <div class="table-responsive">
         <table class="table table-bordered table-hover table-sm">
             <thead>
@@ -16,6 +27,7 @@
                     <th>Cantidad</th>
                     <th>Unidad de Medida</th>
                     <th>Precio</th>
+                    <th>Total</th>
                     <th class="small-cell">Acciones</th>
                 </tr>
             </thead>
@@ -29,7 +41,8 @@
                     <td>{{ recurso.num_factura_idp }}</td>
                     <td>{{ recurso.cantidad }}</td>
                     <td>{{ recurso.id_unidad_m.unidad }}</td>
-                    <td>{{ recurso.precio }}</td>
+                    <td class="Presupuesto">S/.{{ recurso.precio }}</td>
+                    <td class="font-weight-bold text-purple ">S/.{{ recurso.total_recurso }}</td> <!-- Utilizamos las clases de Bootstrap para el color -->
                     <td class="small-cell">
                         <a href="{% url 'edit_recurso' recurso.id %}" class="btn btn-warning btn-sm mr-2">Editar</a>
                         <button onclick="showModal({{ recurso.id }})" class="btn btn-danger btn-sm">Eliminar</button>

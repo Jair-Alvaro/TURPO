@@ -9,16 +9,12 @@
             <div class="form-row">
                 <div class="col-md-4 form-group">
                     <label for="tarea">Tarea:</label>
-                    <select class="form-control dark-input" name="tarea">
-                        {% for tarea in tareas %}
-                        <option value="{{ tarea.id }}">{{ tarea.nom_tarea }}</option>
-                        {% endfor %}
-                    </select>
+                    <input type="text" class="form-control dark-input" value="{{ tarea_seleccionada.nom_tarea }}" readonly>
                 </div>
                 <div class="col-md-4 form-group">
                     <label for="tipo_recurso">Tipo de Recurso:</label>
                     <select class="form-control dark-input" name="tipo_recurso" id="tipo_recurso">
-                        <option value="">Seleccionar tipo recurso</option> <!-- Agrega esta línea -->
+                        <option value="">Seleccionar tipo recurso</option>
                         {% for tipo_recurso in tipos_recurso %}
                         <option value="{{ tipo_recurso.tipo_r }}">{{ tipo_recurso.tipo_r }}</option>
                         {% endfor %}
@@ -31,7 +27,7 @@
                 <div class="col-md-4 form-group" id="personal_div" style="display:none;">
                     <label for="personal_id">Personal:</label>
                     <select class="form-control dark-input" name="personal_id" id="personal_id">
-                        <option value="">Seleccionar personal</option> <!-- Agrega esta línea -->
+                        <option value="">Seleccionar personal</option>
                         {% for personal in personal_list %}
                         <option value="{{ personal.id }}">{{ personal.nombre_personal }}</option>
                         {% endfor %}
@@ -50,7 +46,7 @@
                 <div class="col-md-4 form-group">
                     <label for="unidad_medida">Unidad de Medida:</label>
                     <select class="form-control dark-input" name="unidad_medida">
-                        <option value="">Seleccionar unidad de medida</option> <!-- Agrega esta línea -->
+                        <option value="">Seleccionar unidad de medida</option>
                         {% for unidad_medida in unidades_medida %}
                         <option value="{{ unidad_medida.id }}">{{ unidad_medida.unidad }}</option>
                         {% endfor %}
@@ -61,7 +57,8 @@
                     <input type="number" step="0.01" class="form-control dark-input" name="precio">
                 </div>
             </div>
-            <button type="submit">Guardar</button>
+            <input type="hidden" name="tarea" value="{{ tarea_seleccionada.id }}">
+            <button type="submit" class="btn btn-success">Guardar</button>
         </form>
     </div>
 </div>
