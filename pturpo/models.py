@@ -34,7 +34,7 @@ class TblContacto(models.Model):
 class TblOrganizacion(models.Model):
     id_relacion = models.ForeignKey('TblRelacioncomercial', models.DO_NOTHING, db_column='id_relacion', blank=True, null=True)
     denominacion = models.CharField(max_length=300)
-    ruc = models.DecimalField(max_digits=10, decimal_places=0)
+    ruc = models.DecimalField(max_digits=20, decimal_places=0)
     direccion = models.CharField(max_length=300)
     departamento = models.CharField(max_length=100, blank=True, null=True)
     provincia = models.CharField(max_length=100, blank=True, null=True)
@@ -90,6 +90,8 @@ class TblRecurso(models.Model):
     cantidad = models.DecimalField(max_digits=10, decimal_places=0, blank=True, null=True)
     id_unidad_m = models.ForeignKey('TblUnidadM', models.DO_NOTHING, db_column='id_unidad_m', blank=True, null=True)
     precio = models.DecimalField(max_digits=15, decimal_places=2, blank=True, null=True)
+    f_recurso = models.DateField(blank=True, null=True)
+    notas = models.CharField(max_length=300, blank=True, null=True)
 
     class Meta:
         managed = True

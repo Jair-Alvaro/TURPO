@@ -59,7 +59,7 @@
                     <td class="Presupuesto">S/.{{ proyecto.presupuesto_p_t }}</td>
                     <td class="font-weight-bold text-purple gasto-real">S/.{{ proyecto.uso_recursos }}</td>
                     <td>{{ proyecto.observaciones }}</td>
-                    <td>{{ proyecto.porcentaje_tareas_completadas }} %</td>
+                    <td class="font-weight-bold text-purple gasto-real">{{ proyecto.porcentaje_tareas_completadas }} %</td>
                     <td>
                         {% if proyecto.estado == 'En Espera' %}
                         <span class="badge badge-secondary">{{ proyecto.estado }}</span>

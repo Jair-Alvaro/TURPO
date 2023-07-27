@@ -1,6 +1,8 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.db import transaction
 from django.contrib import messages
+from django.http import HttpResponse
+from openpyxl import Workbook
 from .models import *
 
 def home_view(request):
@@ -256,7 +258,8 @@ def create_proyecto(request):
 
     else:
         # Si la solicitud es GET, obtener todas las organizaciones y categorías para mostrarlas en los desplegables
-        organizaciones = TblOrganizacion.objects.all()
+        relaciones_cliente = TblRelacioncomercial.objects.filter(relacion__in=['Cliente', 'Cliente Proveedor'])
+        organizaciones = TblOrganizacion.objects.filter(id_relacion__in=relaciones_cliente)
         categorias = TblCategoriaP.objects.all()
         return render(request, 'crear_proyecto.html', {'organizaciones': organizaciones, 'categorias': categorias})
 def list_proyectos(request):
@@ -307,8 +310,6 @@ def list_proyectos(request):
     mensajes_exito = [str(m) for m in messages.get_messages(request)]
 
     return render(request, 'proyecto.html', {'proyectos': proyectos, 'organizaciones': organizaciones, 'mensajes_exito': mensajes_exito})
-
-
 def edit_proyecto(request, proyecto_id):
     proyecto = get_object_or_404(TblProyecto, id=proyecto_id)
 
@@ -419,8 +420,6 @@ def list_tareas(request):
     proyectos = TblProyecto.objects.all()
 
     return render(request, 'tarea.html', {'tareas': tareas, 'proyectos': proyectos, 'mensajes_exito': mensajes_exito})
-
-
 def edit_tarea(request, tarea_id):
     tarea = get_object_or_404(TblTarea, id=tarea_id)
     proyectos = TblProyecto.objects.all()
@@ -608,10 +607,6 @@ def delete_personal(request):
 
     return redirect('list_personal')
 
-
-# Resto de los imports y definiciones de vistas
-
-
 def create_recurso(request):
     tarea_id = request.GET.get('tarea_id')
 
@@ -632,9 +627,10 @@ def create_recurso(request):
         cantidad = request.POST.get('cantidad')
         id_unidad_m = request.POST.get('unidad_medida')
         precio = request.POST.get('precio')
-
         detalle_nom_p = request.POST.get('detalle_nom_p')
         num_factura_idp = request.POST.get('numero_factura')
+        f_recurso = request.POST.get('f_recurso')
+        notas = request.POST.get('notas')
 
         if id_tipo_r_value == 'Humano':
             personal_id = request.POST.get('personal_id')
@@ -650,7 +646,9 @@ def create_recurso(request):
                 num_factura_idp=num_factura_idp,
                 cantidad=cantidad,
                 id_unidad_m_id=id_unidad_m,
-                precio=precio
+                precio=precio,
+                f_recurso=f_recurso,
+                notas=notas
             )
         
         # Agregar el mensaje de éxito aquí
@@ -670,21 +668,19 @@ def create_recurso(request):
         'personal_list': personal_list,
         'tarea_seleccionada': tarea_seleccionada,
     })
-
 def list_recursos(request):
-    tarea_id = request.GET.get('tarea_id')
+    proyecto_id = request.GET.get('proyecto_id')
     recursos = TblRecurso.objects.all()
 
-    if tarea_id:
-        recursos = recursos.filter(id_tarea=tarea_id)
+    if proyecto_id:
+        recursos = recursos.filter(id_tarea__id_proyecto=proyecto_id)
 
     for recurso in recursos:
         recurso.total_recurso = recurso.cantidad * recurso.precio
 
-    tareas = TblTarea.objects.all()
+    proyectos = TblProyecto.objects.all()
 
-    return render(request, 'recurso.html', {'recursos': recursos, 'tareas': tareas})
-
+    return render(request, 'recurso.html', {'recursos': recursos, 'proyectos': proyectos})
 def edit_recurso(request, recurso_id):
     recurso = get_object_or_404(TblRecurso, id=recurso_id)
 
@@ -696,6 +692,8 @@ def edit_recurso(request, recurso_id):
         cantidad = request.POST.get('cantidad')
         id_unidad_m = request.POST.get('unidad_medida')
         precio = request.POST.get('precio')
+        f_recurso = request.POST.get('f_recurso')
+        notas = request.POST.get('notas')
 
         recurso.id_tarea_id = id_tarea
         recurso.id_tipo_r_id = id_tipo_r
@@ -704,6 +702,8 @@ def edit_recurso(request, recurso_id):
         recurso.cantidad = cantidad
         recurso.id_unidad_m_id = id_unidad_m
         recurso.precio = precio
+        recurso.f_recurso=f_recurso
+        recurso.notas=notas
 
         recurso.save()
 
@@ -719,7 +719,6 @@ def edit_recurso(request, recurso_id):
         'tipos_recurso': tipos_recurso,
         'unidades_medida': unidades_medida,
     })
-
 def delete_recurso(request):
     if request.method == 'POST':
         recurso_id = request.POST.get('recurso_id')
@@ -728,3 +727,129 @@ def delete_recurso(request):
         return redirect('list_recursos')
 
     return redirect('list_recursos')
+
+
+
+
+
+# reportes axcel
+
+
+def exportar_a_excel(request):
+    proyecto_id = request.GET.get('proyecto_id')
+    recursos = TblRecurso.objects.all()
+
+    if proyecto_id:
+        proyecto = TblProyecto.objects.get(pk=proyecto_id)
+        recursos = recursos.filter(id_tarea__id_proyecto=proyecto_id)
+        nombre_proyecto = proyecto.nom_proyecto
+    else:
+        nombre_proyecto = "todos_los_proyectos"  # Nombre por defecto si no hay filtro
+
+    wb = Workbook()
+    ws = wb.active
+
+    header = ['ID', 'Tarea', 'Tipo de Recurso', 'Detalle o Nombre', 'Número de Factura',
+              'Cantidad', 'Unidad de Medida', 'Precio', 'Fecha del Recurso', 'Notas', 'Total']
+    ws.append(header)
+
+    for recurso in recursos:
+        # Calcula el campo calculado usando los valores de 'precio' y 'cantidad'
+        total_recurso = recurso.precio * recurso.cantidad
+
+        row = [
+            recurso.id,
+            recurso.id_tarea.nom_tarea,
+            recurso.id_tipo_r.tipo_r,
+            recurso.detalle_nom_p,
+            recurso.num_factura_idp,
+            recurso.cantidad,
+            recurso.id_unidad_m.unidad,
+            recurso.precio,
+            recurso.f_recurso,
+            recurso.notas,
+            total_recurso,
+        ]
+        ws.append(row)
+
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = f'attachment; filename=recursos_de_{nombre_proyecto}.xlsx'
+
+    wb.save(response)
+
+    return response
+
+
+def exportar_a_excel2(request):
+    proyecto_id = request.GET.get('proyecto_id')
+    recursos = TblRecurso.objects.all()
+
+    if proyecto_id:
+        proyecto = TblProyecto.objects.get(pk=proyecto_id)
+        recursos = recursos.filter(id_tarea__id_proyecto=proyecto_id)
+        nombre_proyecto = proyecto.nom_proyecto
+    else:
+        nombre_proyecto = "todos_los_proyectos"  # Nombre por defecto si no hay filtro
+
+    # Obtener todas las tareas relacionadas con los recursos
+    tareas = TblTarea.objects.filter(id_proyecto__id=proyecto_id) if proyecto_id else TblTarea.objects.all()
+
+    data_proyectos = []
+    for recurso in recursos:
+        tarea = tareas.get(id=recurso.id_tarea.id)
+        # Obtener los nombres de organización y categoría
+        nombre_organizacion = tarea.id_proyecto.id_organizacion.denominacion if tarea.id_proyecto.id_organizacion else ""
+        nombre_categoria = tarea.id_proyecto.id_categoria.categoria if tarea.id_proyecto.id_categoria else ""
+        # Calcula el campo calculado usando los valores de 'precio' y 'cantidad'
+        total_recurso = recurso.precio * recurso.cantidad
+        data_proyectos.append({
+            'id_organizacion': nombre_organizacion,
+            'id_categoria': nombre_categoria,
+            'nom_proyecto': tarea.id_proyecto.nom_proyecto,
+            'nom_tarea': tarea.nom_tarea,
+            'f_inicio_t': tarea.f_inicio_t.strftime('%Y-%m-%d'),
+            'id_tipo_r': recurso.id_tipo_r.tipo_r,
+            'detalle_nom_p': recurso.detalle_nom_p,
+            'num_factura_idp': recurso.num_factura_idp,
+            'cantidad': recurso.cantidad,
+            'id_unidad_m': recurso.id_unidad_m.unidad,
+            'precio': recurso.precio,
+            'f_recurso': recurso.f_recurso.strftime('%Y-%m-%d'),
+            'notas': recurso.notas,
+            'total_recurso': total_recurso,
+        })
+
+    wb = Workbook()
+    ws = wb.active
+
+    header = ['Organización', 'Categoría', 'Nombre Proyecto', 'Tarea', 'Fecha Inicio Tarea',
+              'Tipo de Recurso', 'Detalle o Nombre', 'Número de Factura', 'Cantidad', 'Unidad de Medida',
+              'Precio', 'Fecha del Recurso', 'Notas', 'Total Recurso']
+
+    ws.append(header)
+
+    for data in data_proyectos:
+        row = [
+            data['id_organizacion'],
+            data['id_categoria'],
+            data['nom_proyecto'],
+            data['nom_tarea'],
+            data['f_inicio_t'],
+            data['id_tipo_r'],
+            data['detalle_nom_p'],
+            data['num_factura_idp'],
+            data['cantidad'],
+            data['id_unidad_m'],
+            data['precio'],
+            data['f_recurso'],
+            data['notas'],
+            data['total_recurso'],
+        ]
+        ws.append(row)
+
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = f'attachment; filename=reporte_de_{nombre_proyecto}.xlsx'
+
+    wb.save(response)
+
+    return response

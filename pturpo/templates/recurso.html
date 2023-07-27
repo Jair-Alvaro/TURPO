@@ -3,18 +3,25 @@
 {% block content %}
 <div class="card table-card">
     <h1>Listado de Recursos</h1>
+    <div class="container mt-5">
+      <div class="mb-3">
+          <!-- Agregar estilos Bootstrap y separar los enlaces con espaciado -->
+          <a class="btn btn-success mr-3" href="{% url 'exportar_a_excel' %}{% if request.GET.proyecto_id %}?proyecto_id={{ request.GET.proyecto_id }}{% endif %}">Descargar Recursos</a>
+          <a class="btn btn-success" href="{% url 'exportar_a_excel2' %}{% if request.GET.proyecto_id %}?proyecto_id={{ request.GET.proyecto_id }}{% endif %}">Descargar Reporte completo</a>
+      </div>
+  </div>
     <form method="get" class="form-inline mb-3">
-        <div class="form-group">
-            <label for="tarea_id" class="mr-2">Filtrar por Tarea:</label>
-            <select name="tarea_id" id="tarea_id" class="form-control mr-2">
-                <option value="">Todas las Tareas</option>
-                {% for tarea in tareas %}
-                    <option value="{{ tarea.id }}" {% if tarea.id|slugify == request.GET.tarea_id %}selected{% endif %}>{{ tarea.nom_tarea }}</option>
-                {% endfor %}
-            </select>
-            <button type="submit" class="btn btn-dark">Filtrar</button>
-        </div>
-    </form>
+      <div class="form-group">
+          <label for="proyecto_id" class="mr-2">Filtrar por Proyecto:</label>
+          <select name="proyecto_id" id="proyecto_id" class="form-control mr-2">
+              <option value="">Todos los Proyectos</option>
+              {% for proyecto in proyectos %}
+                  <option value="{{ proyecto.id }}" {% if proyecto.id|slugify == request.GET.proyecto_id %}selected{% endif %}>{{ proyecto.nom_proyecto }}</option>
+              {% endfor %}
+          </select>
+          <button type="submit" class="btn btn-dark">Filtrar</button>
+      </div>
+  </form>
     <div class="table-responsive">
         <table class="table table-bordered table-hover table-sm">
             <thead>
@@ -27,6 +34,8 @@
                     <th>Cantidad</th>
                     <th>Unidad de Medida</th>
                     <th>Precio</th>
+                    <th>Fecha del Recurso</th>
+                    <th>Notas</th>
                     <th>Total</th>
                     <th class="small-cell">Acciones</th>
                 </tr>
@@ -42,7 +51,9 @@
                     <td>{{ recurso.cantidad }}</td>
                     <td>{{ recurso.id_unidad_m.unidad }}</td>
                     <td class="Presupuesto">S/.{{ recurso.precio }}</td>
-                    <td class="font-weight-bold text-purple ">S/.{{ recurso.total_recurso }}</td> <!-- Utilizamos las clases de Bootstrap para el color -->
+                    <td>{{ recurso.f_recurso }}</td>
+                    <td>{{ recurso.notas }}</td>
+                    <td class="font-weight-bold text-purple ">S/.{{ recurso.total_recurso }}</td>
                     <td class="small-cell">
                         <a href="{% url 'edit_recurso' recurso.id %}" class="btn btn-warning btn-sm mr-2">Editar</a>
                         <button onclick="showModal({{ recurso.id }})" class="btn btn-danger btn-sm">Eliminar</button>
@@ -52,7 +63,6 @@
             </tbody>
         </table>
     </div>
-
     <!-- Modal para confirmar la eliminación -->
     <div class="modal fade" id="confirmModal" tabindex="-1" role="dialog" aria-labelledby="confirmModalLabel"
       aria-hidden="true">

@@ -55,4 +55,7 @@ urlpatterns = [
     path('crearrecurso/', views.create_recurso, name='create_recurso'),
     path('editarrecurso/<int:recurso_id>/', views.edit_recurso, name='edit_recurso'),
     path('eliminarrecurso/', views.delete_recurso, name='delete_recurso'),
+    path('exportar_a_excel/', views.exportar_a_excel, name='exportar_a_excel'),
+    path('exportar/', views.exportar_a_excel2, name='exportar_a_excel2'),
+    
 ]
