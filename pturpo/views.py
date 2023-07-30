@@ -729,9 +729,6 @@ def delete_recurso(request):
     return redirect('list_recursos')
 
 
-
-
-
 # reportes axcel
 
 
@@ -778,7 +775,6 @@ def exportar_a_excel(request):
     wb.save(response)
 
     return response
-
 
 def exportar_a_excel2(request):
     proyecto_id = request.GET.get('proyecto_id')

@@ -49,7 +49,7 @@
             <div class="form-row">
                 <div class="col-md-4 form-group">
                     <label for="f_recurso">Fecha del Recurso:</label>
-                    <input type="date" class="form-control dark-input" name="f_recurso" value="{{ recurso.f_recurso }}">
+                    <input type="date" class="form-control dark-input" name="f_recurso" value="{{ recurso.f_recurso|date:'Y-m-d' }}" placeholder="YYYY-MM-DD">
                 </div>
                 <div class="col-md-4 form-group">
                     <label for="notas">Notas:</label>
