@@ -6,7 +6,7 @@
     {% for message in messages %}
       <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
     {% endfor %}
-  </div>
+</div>
 {% endif %}
 <div class="card table-card">
     <h1>Listado de Proyectos</h1>
@@ -18,6 +18,14 @@
                 {% for organizacion in organizaciones %}
                 <option value="{{ organizacion.id }}" {% if organizacion.id == request.GET.organizacion_id %}selected{% endif %}>{{ organizacion.denominacion }}</option>
                 {% endfor %}
+            </select>
+        </div>
+        <div class="form-group mr-2">
+            <label for="porcentaje_completado">Porcentaje Completado:</label>
+            <select name="porcentaje_completado" id="porcentaje_completado" class="form-control">
+                <option value="">Todos</option>
+                <option value="100" {% if request.GET.porcentaje_completado == '100' %}selected{% endif %}>Proyectos Completados</option>
+                <option value="no_100" {% if request.GET.porcentaje_completado == 'no_100' %}selected{% endif %}>Proyectos no Completados</option>
             </select>
         </div>
         <button type="submit" class="btn btn-dark">Filtrar</button>

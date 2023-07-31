@@ -266,6 +266,7 @@ def list_proyectos(request):
     organizaciones = TblOrganizacion.objects.all()  # Obtener todas las organizaciones
 
     organizacion_id = request.GET.get('organizacion_id')  # Obtener el ID de la organización seleccionada
+    filtro_porcentaje_completado = request.GET.get('porcentaje_completado')  # Obtener el valor del porcentaje completado seleccionado
 
     # Obtener todos los proyectos o filtrar por organización si se seleccionó una
     if organizacion_id:
@@ -306,6 +307,12 @@ def list_proyectos(request):
 
         # Asignar el porcentaje de tareas completadas al atributo 'porcentaje_tareas_completadas' del proyecto
         proyecto.porcentaje_tareas_completadas = round(porcentaje_completado, 2)
+
+    # Filtrar los proyectos según el porcentaje completado seleccionado
+    if filtro_porcentaje_completado == '100':
+        proyectos = [proyecto for proyecto in proyectos if proyecto.porcentaje_tareas_completadas == 100]
+    elif filtro_porcentaje_completado == 'no_100':
+        proyectos = [proyecto for proyecto in proyectos if proyecto.porcentaje_tareas_completadas < 100]
 
     mensajes_exito = [str(m) for m in messages.get_messages(request)]
 
