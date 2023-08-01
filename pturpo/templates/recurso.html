@@ -2,99 +2,116 @@
 
 {% block content %}
 <div class="card table-card">
-    <h1>Listado de Recursos</h1>
-    <div class="container mt-5">
-      <div class="mb-3">
-          <!-- Agregar estilos Bootstrap y separar los enlaces con espaciado -->
-          <a class="btn btn-success mr-3" href="{% url 'exportar_a_excel' %}{% if request.GET.proyecto_id %}?proyecto_id={{ request.GET.proyecto_id }}{% endif %}">Descargar Recursos</a>
-          <a class="btn btn-success" href="{% url 'exportar_a_excel2' %}{% if request.GET.proyecto_id %}?proyecto_id={{ request.GET.proyecto_id }}{% endif %}">Descargar Reporte completo</a>
-      </div>
+  <h1>Listado de Recursos</h1>
+  <div class="mb-3">
+    <!-- Agregar estilos Bootstrap y separar los enlaces con espaciado -->
+    <a class="btn btn-success mr-3" href="{% url 'exportar_a_excel' %}{% if request.GET.proyecto_id %}?proyecto_id={{ request.GET.proyecto_id }}{% endif %}">Descargar Recursos</a>
+    <a class="btn btn-success" href="{% url 'exportar_a_excel2' %}{% if request.GET.proyecto_id %}?proyecto_id={{ request.GET.proyecto_id }}{% endif %}">Descargar Reporte completo</a>
   </div>
-    <form method="get" class="form-inline mb-3">
-      <div class="form-group">
-          <label for="proyecto_id" class="mr-2">Filtrar por Proyecto:</label>
-          <select name="proyecto_id" id="proyecto_id" class="form-control mr-2">
-              <option value="">Todos los Proyectos</option>
-              {% for proyecto in proyectos %}
-                  <option value="{{ proyecto.id }}" {% if proyecto.id|slugify == request.GET.proyecto_id %}selected{% endif %}>{{ proyecto.nom_proyecto }}</option>
-              {% endfor %}
-          </select>
-          <button type="submit" class="btn btn-dark">Filtrar</button>
-      </div>
-  </form>
-    <div class="table-responsive">
-        <table class="table table-bordered table-hover table-sm">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Tarea</th>
-                    <th>Tipo de Recurso</th>
-                    <th>Detalle o Nombre</th>
-                    <th>Número de Factura</th>
-                    <th>Cantidad</th>
-                    <th>Unidad de Medida</th>
-                    <th>Precio</th>
-                    <th>Fecha del Recurso</th>
-                    <th>Notas</th>
-                    <th>Total</th>
-                    <th class="small-cell">Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for recurso in recursos %}
-                <tr>
-                    <td>{{ recurso.id }}</td>
-                    <td>{{ recurso.id_tarea.nom_tarea }}</td>
-                    <td>{{ recurso.id_tipo_r.tipo_r }}</td>
-                    <td>{{ recurso.detalle_nom_p }}</td>
-                    <td>{{ recurso.num_factura_idp }}</td>
-                    <td>{{ recurso.cantidad }}</td>
-                    <td>{{ recurso.id_unidad_m.unidad }}</td>
-                    <td class="Presupuesto">S/.{{ recurso.precio }}</td>
-                    <td>{{ recurso.f_recurso }}</td>
-                    <td>{{ recurso.notas }}</td>
-                    <td class="font-weight-bold text-purple ">S/.{{ recurso.total_recurso }}</td>
-                    <td class="small-cell">
-                        <a href="{% url 'edit_recurso' recurso.id %}" class="btn btn-warning btn-sm mr-2">Editar</a>
-                        <button onclick="showModal({{ recurso.id }})" class="btn btn-danger btn-sm">Eliminar</button>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+  <form method="get" class="form-inline mb-3">
+    <div class="form-group">
+      <label for="proyecto_id" class="mr-2">Filtrar por Proyecto:</label>
+      <select name="proyecto_id" id="proyecto_id" class="form-control mr-2">
+        <option value="">Todos los Proyectos</option>
+        {% for proyecto in proyectos %}
+        <option value="{{ proyecto.id }}" {% if proyecto.id|slugify == request.GET.proyecto_id %}selected{% endif %}>{{ proyecto.nom_proyecto }}</option>
+        {% endfor %}
+      </select>
+      <button type="submit" class="btn btn-dark">Filtrar</button>
     </div>
-    <!-- Modal para confirmar la eliminación -->
-    <div class="modal fade" id="confirmModal" tabindex="-1" role="dialog" aria-labelledby="confirmModalLabel"
-      aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="confirmModalLabel">¿Estás seguro de que deseas eliminar este recurso?</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body">
-            <p>Esta acción no se puede deshacer.</p>
-          </div>
-          <div class="modal-footer">
-            <form id="deleteForm" method="post" action="{% url 'delete_recurso' %}">
-              {% csrf_token %}
-              <input type="hidden" name="recurso_id" id="recursoId" value="">
-              <button type="submit" class="btn btn-danger">Confirmar</button>
-              <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-            </form>
-          </div>
+  </form>
+  <div class="table-responsive">
+    <table class="table table-bordered table-hover table-sm">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Tarea</th>
+          <th>Tipo de Recurso</th>
+          <th>Detalle o Nombre</th>
+          <th>Número de Factura</th>
+          <th>Cantidad</th>
+          <th>Unidad de Medida</th>
+          <th>Precio</th>
+          <th>Fecha del Recurso</th>
+          <th>Notas</th>
+          <th>Total</th>
+          <th class="small-cell">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for recurso in page_obj %}
+        <tr>
+          <td>{{ recurso.id }}</td>
+          <td>{{ recurso.id_tarea.nom_tarea }}</td>
+          <td>{{ recurso.id_tipo_r.tipo_r }}</td>
+          <td>{{ recurso.detalle_nom_p }}</td>
+          <td>{{ recurso.num_factura_idp }}</td>
+          <td>{{ recurso.cantidad }}</td>
+          <td>{{ recurso.id_unidad_m.unidad }}</td>
+          <td class="Presupuesto">S/.{{ recurso.precio }}</td>
+          <td>{{ recurso.f_recurso }}</td>
+          <td>{{ recurso.notas }}</td>
+          <td class="font-weight-bold text-purple ">S/.{{ recurso.total_recurso }}</td>
+          <td class="small-cell">
+            <a href="{% url 'edit_recurso' recurso.id %}" class="btn btn-warning btn-sm mr-2">Editar</a>
+            <button onclick="showModal({{ recurso.id }})" class="btn btn-danger btn-sm">Eliminar</button>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+<!-- Paginación -->
+<div class="pagination">
+  <span class="step-links">
+      {% if page_obj.has_previous %}
+          <a href="?page=1{% if request.GET.proyecto_id %}&proyecto_id={{ request.GET.proyecto_id }}{% endif %}">&laquo; primera</a>
+          <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.proyecto_id %}&proyecto_id={{ request.GET.proyecto_id }}{% endif %}">anterior</a>
+      {% endif %}
+
+      <span class="current">
+          Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}.
+      </span>
+
+      {% if page_obj.has_next %}
+          <a href="?page={{ page_obj.next_page_number }}{% if request.GET.proyecto_id %}&proyecto_id={{ request.GET.proyecto_id }}{% endif %}">siguiente</a>
+          <a href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.proyecto_id %}&proyecto_id={{ request.GET.proyecto_id }}{% endif %}">ultima &raquo;</a>
+      {% endif %}
+  </span>
+</div>
+
+  <!-- Modal para confirmar la eliminación -->
+  <div class="modal fade" id="confirmModal" tabindex="-1" role="dialog" aria-labelledby="confirmModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="confirmModalLabel">¿Estás seguro de que deseas eliminar este recurso?</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p>Esta acción no se puede deshacer.</p>
+        </div>
+        <div class="modal-footer">
+          <form id="deleteForm" method="post" action="{% url 'delete_recurso' %}">
+            {% csrf_token %}
+            <input type="hidden" name="recurso_id" id="recursoId" value="">
+            <button type="submit" class="btn btn-danger">Confirmar</button>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+          </form>
         </div>
       </div>
     </div>
+  </div>
 
-    <!-- JavaScript -->
-    <script>
-      function showModal(recursoId) {
-        document.getElementById("recursoId").value = recursoId;
-        $('#confirmModal').modal('show');
-      }
-    </script>
+  <!-- JavaScript -->
+  <script>
+    function showModal(recursoId) {
+      document.getElementById("recursoId").value = recursoId;
+      $('#confirmModal').modal('show');
+    }
+  </script>
 </div>
 {% endblock %}

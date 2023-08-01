@@ -53,7 +53,7 @@
                 </tr>
             </thead>
             <tbody>
-                {% for proyecto in proyectos %}
+                {% for proyecto in page_obj %}
                 <tr>
                     <td>{{ proyecto.id }}</td>
                     <td>{{ proyecto.id_organizacion.denominacion }}</td>
@@ -90,34 +90,54 @@
             </tbody>
         </table>
     </div>
-    <!-- Modal para confirmar la eliminación -->
-    <div class="modal fade" id="confirmModal" tabindex="-1" role="dialog" aria-labelledby="confirmModalLabel"
-      aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="confirmModalLabel">¿Estás seguro de que deseas eliminar este proyecto?</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body">
-            <p>Esta acción no se puede deshacer.</p>
-          </div>
-          <div class="modal-footer">
-            <form id="deleteForm" method="post" action="{% url 'delete_proyecto' %}">
-              {% csrf_token %}
-              <input type="hidden" name="proyecto_id" id="proyectoId" value="">
-              <button type="submit" class="btn btn-danger">Confirmar</button>
-              <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-            </form>
-          </div>
-        </div>
+    <!-- Paginación -->
+    <div class="pagination">
+      <span class="step-links">
+          {% if page_obj.has_previous %}
+              <a href="?page=1{% if request.GET.organizacion_id %}&organizacion_id={{ request.GET.organizacion_id }}{% endif %}{% if request.GET.porcentaje_completado %}&porcentaje_completado={{ request.GET.porcentaje_completado }}{% endif %}">&laquo; primera</a>
+              <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.organizacion_id %}&organizacion_id={{ request.GET.organizacion_id }}{% endif %}{% if request.GET.porcentaje_completado %}&porcentaje_completado={{ request.GET.porcentaje_completado }}{% endif %}">anterior</a>
+          {% endif %}
+
+          <span class="current">
+              Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}.
+          </span>
+
+          {% if page_obj.has_next %}
+              <a href="?page={{ page_obj.next_page_number }}{% if request.GET.organizacion_id %}&organizacion_id={{ request.GET.organizacion_id }}{% endif %}{% if request.GET.porcentaje_completado %}&porcentaje_completado={{ request.GET.porcentaje_completado }}{% endif %}">siguiente</a>
+              <a href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.organizacion_id %}&organizacion_id={{ request.GET.organizacion_id }}{% endif %}{% if request.GET.porcentaje_completado %}&porcentaje_completado={{ request.GET.porcentaje_completado }}{% endif %}">ultima &raquo;</a>
+          {% endif %}
+      </span>
+    </div>
+</div>
+
+<!-- Modal para confirmar la eliminación -->
+<div class="modal fade" id="confirmModal" tabindex="-1" role="dialog" aria-labelledby="confirmModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="confirmModalLabel">¿Estás seguro de que deseas eliminar este proyecto?</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>Esta acción no se puede deshacer.</p>
+      </div>
+      <div class="modal-footer">
+        <form id="deleteForm" method="post" action="{% url 'delete_proyecto' %}">
+          {% csrf_token %}
+          <input type="hidden" name="proyecto_id" id="proyectoId" value="">
+          <button type="submit" class="btn btn-danger">Confirmar</button>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+        </form>
       </div>
     </div>
-    
-    <!-- JavaScript -->
-    <script>
+  </div>
+</div>
+
+<!-- JavaScript -->
+<script>
     function ocultarAlerta() {
     const alerta = document.querySelector(".alert");
     if (alerta) {
@@ -128,11 +148,13 @@
   }
   // Llamar a la función para ocultar la alerta después de cargar la página
   document.addEventListener("DOMContentLoaded", ocultarAlerta);
-      function showModal(proyectoId) {
+
+    function showModal(proyectoId) {
         document.getElementById("proyectoId").value = proyectoId;
         $('#confirmModal').modal('show');
-      }
-      function verificarGastoReal() {
+    }
+
+    function verificarGastoReal() {
         var filas = document.querySelectorAll('.table tbody tr');
 
         filas.forEach(function (fila) {
@@ -154,6 +176,5 @@
     document.addEventListener('DOMContentLoaded', function () {
         verificarGastoReal();
     });
-    </script>
-</div>
+</script>
 {% endblock %}

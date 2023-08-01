@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.db import transaction
 from django.contrib import messages
 from django.http import HttpResponse
+from django.core.paginator import Paginator, Page
 from openpyxl import Workbook
 from .models import *
 
@@ -263,60 +264,50 @@ def create_proyecto(request):
         categorias = TblCategoriaP.objects.all()
         return render(request, 'crear_proyecto.html', {'organizaciones': organizaciones, 'categorias': categorias})
 def list_proyectos(request):
-    organizaciones = TblOrganizacion.objects.all()  # Obtener todas las organizaciones
+    organizaciones = TblOrganizacion.objects.all()
+    organizacion_id = request.GET.get('organizacion_id')
+    filtro_porcentaje_completado = request.GET.get('porcentaje_completado')
 
-    organizacion_id = request.GET.get('organizacion_id')  # Obtener el ID de la organización seleccionada
-    filtro_porcentaje_completado = request.GET.get('porcentaje_completado')  # Obtener el valor del porcentaje completado seleccionado
-
-    # Obtener todos los proyectos o filtrar por organización si se seleccionó una
     if organizacion_id:
         proyectos = TblProyecto.objects.filter(id_organizacion_id=organizacion_id)
     else:
         proyectos = TblProyecto.objects.all()
 
     for proyecto in proyectos:
-        # Obtener las tareas asociadas a cada proyecto
         tareas_proyecto = TblTarea.objects.filter(id_proyecto=proyecto.id)
-
-        # Calcular el gasto real para cada proyecto
         gasto_real_proyecto = 0
         for tarea in tareas_proyecto:
-            # Obtener los recursos asignados a cada tarea
             recursos_asignados = TblRecurso.objects.filter(id_tarea=tarea.id)
-            # Sumar los costos de los recursos asignados a la tarea
             gasto_tarea = sum(recurso.cantidad * recurso.precio for recurso in recursos_asignados)
             gasto_real_proyecto += gasto_tarea
-
-        # Asignar el gasto real calculado al atributo 'uso_recursos' del proyecto
         proyecto.uso_recursos = gasto_real_proyecto
 
-        # Contadores para tareas completadas y totales
         tareas_completadas = 0
         total_tareas = tareas_proyecto.count()
 
         for tarea in tareas_proyecto:
-            # Verificar si la tarea está completada
             if tarea.estado == 'Completado':
                 tareas_completadas += 1
 
-        # Calcular el porcentaje de tareas completadas
         if total_tareas > 0:
             porcentaje_completado = (tareas_completadas / total_tareas) * 100
         else:
             porcentaje_completado = 0
 
-        # Asignar el porcentaje de tareas completadas al atributo 'porcentaje_tareas_completadas' del proyecto
         proyecto.porcentaje_tareas_completadas = round(porcentaje_completado, 2)
 
-    # Filtrar los proyectos según el porcentaje completado seleccionado
     if filtro_porcentaje_completado == '100':
         proyectos = [proyecto for proyecto in proyectos if proyecto.porcentaje_tareas_completadas == 100]
     elif filtro_porcentaje_completado == 'no_100':
         proyectos = [proyecto for proyecto in proyectos if proyecto.porcentaje_tareas_completadas < 100]
 
+    paginator = Paginator(proyectos, 3)  # Mostrar 10 proyectos por página
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
     mensajes_exito = [str(m) for m in messages.get_messages(request)]
 
-    return render(request, 'proyecto.html', {'proyectos': proyectos, 'organizaciones': organizaciones, 'mensajes_exito': mensajes_exito})
+    return render(request, 'proyecto.html', {'page_obj': page_obj, 'organizaciones': organizaciones, 'mensajes_exito': mensajes_exito})
 def edit_proyecto(request, proyecto_id):
     proyecto = get_object_or_404(TblProyecto, id=proyecto_id)
 
@@ -426,7 +417,12 @@ def list_tareas(request):
     # Obtener todos los proyectos para mostrar en el desplegable
     proyectos = TblProyecto.objects.all()
 
-    return render(request, 'tarea.html', {'tareas': tareas, 'proyectos': proyectos, 'mensajes_exito': mensajes_exito})
+    paginator = Paginator(tareas, 5)  # Muestra 5 tareas por página
+
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, 'tarea.html', {'page_obj': page_obj, 'proyectos': proyectos, 'mensajes_exito': mensajes_exito})
 def edit_tarea(request, tarea_id):
     tarea = get_object_or_404(TblTarea, id=tarea_id)
     proyectos = TblProyecto.objects.all()
@@ -682,12 +678,18 @@ def list_recursos(request):
     if proyecto_id:
         recursos = recursos.filter(id_tarea__id_proyecto=proyecto_id)
 
-    for recurso in recursos:
+    # Crea el objeto Paginator con los recursos y el número de elementos por página
+    paginator = Paginator(recursos, 5)  # Muestra 5 recursos por página
+
+    page_number = request.GET.get('page')  # Obtiene el número de página de la URL
+    page_obj = paginator.get_page(page_number)  # Obtiene la página actual
+
+    for recurso in page_obj:
         recurso.total_recurso = recurso.cantidad * recurso.precio
 
     proyectos = TblProyecto.objects.all()
 
-    return render(request, 'recurso.html', {'recursos': recursos, 'proyectos': proyectos})
+    return render(request, 'recurso.html', {'page_obj': page_obj, 'proyectos': proyectos})
 def edit_recurso(request, recurso_id):
     recurso = get_object_or_404(TblRecurso, id=recurso_id)
 

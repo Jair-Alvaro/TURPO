@@ -42,7 +42,7 @@
                 </tr>
             </thead>
             <tbody>
-                {% for tarea in tareas %}
+                {% for tarea in page_obj %}
                 <tr>
                     <td>{{ tarea.id_proyecto.nom_proyecto }}</td>
                     <td>{{ tarea.nom_tarea }}</td>
@@ -81,6 +81,24 @@
             </tbody>
         </table>
     </div>
+        <!-- Paginación -->
+        <div class="pagination">
+            <span class="step-links">
+                {% if page_obj.has_previous %}
+                    <a href="?page=1{% if request.GET.proyecto_id %}&proyecto_id={{ request.GET.proyecto_id }}{% endif %}">&laquo; primera</a>
+                    <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.proyecto_id %}&proyecto_id={{ request.GET.proyecto_id }}{% endif %}">anterior</a>
+                {% endif %}
+
+                <span class="current">
+                    Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}.
+                </span>
+
+                {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}{% if request.GET.proyecto_id %}&proyecto_id={{ request.GET.proyecto_id }}{% endif %}">siguiente</a>
+                    <a href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.proyecto_id %}&proyecto_id={{ request.GET.proyecto_id }}{% endif %}">ultima &raquo;</a>
+                {% endif %}
+            </span>
+        </div>
 </div>
 
 <!-- Modal para confirmar la eliminación -->
