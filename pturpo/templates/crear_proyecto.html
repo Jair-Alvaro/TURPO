@@ -18,12 +18,15 @@
             </div>
             <div class="col-md-6 form-group">
                 <label for="categoria">Categoría:</label>
-                <select class="form-control dark-input" name="id_categoria">
+                <select class="form-control dark-input" name="id_categoria" required>
                     <option value="">Seleccionar categoría</option> 
                     {% for categoria in categorias %}
                     <option value="{{ categoria.id }}">{{ categoria.categoria }}</option>
                     {% endfor %}
                 </select>
+                <div class="invalid-feedback">
+                    Por favor, selecciona una categoría.
+                </div>
             </div>
         </div>
             <div class="form-row">

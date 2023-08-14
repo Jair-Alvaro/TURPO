@@ -36,17 +36,17 @@
             <thead>
                 <tr>
                     <th>ID</th>
-                    <th>Organización</th>
+                    <th style="width: 600px">__Organización__</th>
                     <th>Categoría</th>
-                    <th>Nombre del Proyecto</th>
+                    <th style="width: 600px">Nombre_del_Proyecto</th>
                     <th>Prioridad</th>
-                    <th>Fecha de Registro</th>
+                    <th>Fecha Registro</th>
                     <th>Fecha de Inicio</th>
-                    <th>Fecha de Finalización</th>
+                    <th>Fecha de Final</th>
                     <th>Número de Presupuesto</th>
                     <th>Presupuesto Total</th>
                     <th>Gasto Real</th>
-                    <th>Observaciones</th>
+                    <th style="width: 1000px">_______Observaciones_______</th>
                     <th>Porcentaje</th>
                     <th>Estado</th>
                     <th class="small-cell">Acciones</th>
@@ -58,15 +58,15 @@
                     <td>{{ proyecto.id }}</td>
                     <td>{{ proyecto.id_organizacion.denominacion }}</td>
                     <td>{{ proyecto.id_categoria.categoria }}</td>
-                    <td>{{ proyecto.nom_proyecto }}</td>
+                    <td> {{ proyecto.nom_proyecto }}</td>
                     <td>{{ proyecto.prioridad }}</td>
-                    <td>{{ proyecto.f_registro }}</td>
-                    <td>{{ proyecto.f_inicio_p }}</td>
-                    <td>{{ proyecto.f_final_p }}</td>
+                    <td>{{ proyecto.f_registro|date:"d/m/y" }}</td>
+                    <td>{{ proyecto.f_inicio_p|date:"d/m/y" }}</td>
+                    <td>{{ proyecto.f_final_p|date:"d/m/y" }}</td>
                     <td>{{ proyecto.num_presupuesto_doc }}</td>
                     <td class="Presupuesto">S/.{{ proyecto.presupuesto_p_t }}</td>
                     <td class="font-weight-bold text-purple gasto-real">S/.{{ proyecto.uso_recursos }}</td>
-                    <td>{{ proyecto.observaciones }}</td>
+                    <td style="width: 1000px; word-wrap: break-word; white-space: normal;">{{ proyecto.observaciones }}</td>
                     <td class="font-weight-bold text-purple gasto-real">{{ proyecto.porcentaje_tareas_completadas }} %</td>
                     <td>
                         {% if proyecto.estado == 'En Espera' %}

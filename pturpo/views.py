@@ -417,7 +417,7 @@ def list_tareas(request):
     # Obtener todos los proyectos para mostrar en el desplegable
     proyectos = TblProyecto.objects.all()
 
-    paginator = Paginator(tareas, 5)  # Muestra 5 tareas por página
+    paginator = Paginator(tareas, 4)  # Muestra 4 tareas por página
 
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
@@ -679,7 +679,7 @@ def list_recursos(request):
         recursos = recursos.filter(id_tarea__id_proyecto=proyecto_id)
 
     # Crea el objeto Paginator con los recursos y el número de elementos por página
-    paginator = Paginator(recursos, 5)  # Muestra 5 recursos por página
+    paginator = Paginator(recursos, 4)  # Muestra 5 recursos por página
 
     page_number = request.GET.get('page')  # Obtiene el número de página de la URL
     page_obj = paginator.get_page(page_number)  # Obtiene la página actual

@@ -25,15 +25,15 @@
       <thead>
         <tr>
           <th>ID</th>
-          <th>Tarea</th>
+          <th style="width: 800px">_____Tarea_____</th>
           <th>Tipo de Recurso</th>
-          <th>Detalle o Nombre</th>
+          <th style="width: 800px">___Detalle_o_Nombre___</th>
           <th>Número de Factura</th>
           <th>Cantidad</th>
           <th>Unidad de Medida</th>
           <th>Precio</th>
           <th>Fecha del Recurso</th>
-          <th>Notas</th>
+          <th style="width: 800px">_______Notas_______</th>
           <th>Total</th>
           <th class="small-cell">Acciones</th>
         </tr>
@@ -49,7 +49,7 @@
           <td>{{ recurso.cantidad }}</td>
           <td>{{ recurso.id_unidad_m.unidad }}</td>
           <td class="Presupuesto">S/.{{ recurso.precio }}</td>
-          <td>{{ recurso.f_recurso }}</td>
+          <td>{{ recurso.f_recurso|date:"d/m/y" }}</td>
           <td>{{ recurso.notas }}</td>
           <td class="font-weight-bold text-purple ">S/.{{ recurso.total_recurso }}</td>
           <td class="small-cell">

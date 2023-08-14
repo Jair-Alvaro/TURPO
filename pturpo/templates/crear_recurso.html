@@ -13,7 +13,7 @@
                 </div>
                 <div class="col-md-4 form-group">
                     <label for="tipo_recurso">Tipo de Recurso:</label>
-                    <select class="form-control dark-input" name="tipo_recurso" id="tipo_recurso">
+                    <select class="form-control dark-input" name="tipo_recurso" id="tipo_recurso" required>
                         <option value="">Seleccionar tipo recurso</option>
                         {% for tipo_recurso in tipos_recurso %}
                         <option value="{{ tipo_recurso.tipo_r }}">{{ tipo_recurso.tipo_r }}</option>
@@ -45,7 +45,7 @@
                 </div>
                 <div class="col-md-4 form-group">
                     <label for="unidad_medida">Unidad de Medida:</label>
-                    <select class="form-control dark-input" name="unidad_medida">
+                    <select class="form-control dark-input" name="unidad_medida" required>
                         <option value="">Seleccionar unidad de medida</option>
                         {% for unidad_medida in unidades_medida %}
                         <option value="{{ unidad_medida.id }}">{{ unidad_medida.unidad }}</option>
